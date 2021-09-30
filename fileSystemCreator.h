@@ -1,6 +1,15 @@
+#ifndef fileSystemCreator_h
+#define fileSystemCreator_h
+#include <string>
+#include <math.h>
+using namespace std;
+
 typedef struct {
-int8_t indexSize;
-int8_t clusterSize;
-int8_t indexStart;
-int8_t rootStart;
+unsigned char indexSize;
+unsigned char clusterSize;
+unsigned char indexStart;
+unsigned char rootStart;
 }FileSystem;
+
+void createFile(FileSystem fs, string filename);
+#endif
