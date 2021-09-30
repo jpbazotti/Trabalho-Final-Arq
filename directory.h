@@ -6,11 +6,7 @@
 using namespace std;
 
 boolean DIR(FILE *dir){
-  if(dir == NULL){
-    printf("Diretorio inexistente\n");
-    return;
-  }
-  while(1==1){
+  while(1){
     char *cache;
     fread(&cache, sizeof(int8), 1, dir);
     if(cache[0] == 28){
