@@ -2,13 +2,14 @@
 #define fileSystemCreator_h
 #include <string>
 #include <math.h>
+#include "definitions.h"
 using namespace std;
 
 typedef struct {
-unsigned char indexSize;
-unsigned char clusterSize;
-unsigned char indexStart;
-unsigned char rootStart;
+int8 indexSize;
+int8 clusterSize;
+int8 indexStart;
+int8 rootStart;
 }FileSystem;
 
 void createFile(FileSystem fs, string filename);
