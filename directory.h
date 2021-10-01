@@ -13,9 +13,9 @@ boolean DIR(FILE *dir){
       break;
     }
     fseek(dir, 0, SEEK_CUR-1);
-    fread(&cache, sizeof(int8), 8, dir);
+    fgets(&cache, sizeof(int8), 9, dir);
     cout << cache << ".";
-    fread(&cache, sizeof(int8), 3, dir);
+    fgets(&cache, sizeof(int8), 4, dir);
     cout << cache << "\n";
     fseek(dir, 1, SEEK_CUR);
   }
