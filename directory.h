@@ -1,22 +1,22 @@
+#ifndef directory_h
+#define directory_h
 #include <definitions.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <iostream>
+#include <math.h>
+#include <string.h>
+#include "clusterManagement.h"
+
 using namespace std;
 
-boolean DIR(FILE *dir){
-  while(1){
-    char *cache;
-    fread(&cache, sizeof(int8), 1, dir);
-    if(cache[0] == 28){
-      break;
-    }
-    fseek(dir, 0, SEEK_CUR-1);
-    fgets(&cache, sizeof(int8), 9, dir);
-    cout << cache << ".";
-    fgets(&cache, sizeof(int8), 4, dir);
-    cout << cache << "\n";
-    fseek(dir, 1, SEEK_CUR);
-  }
-}
+typedef struct {
+char name[8];
+char extension[3];
+int8 startCluster;
+}dirEntry;
+
+
+bool DIR(FILE *dir);
+void createDir(FILE *file, int8 curDir,char dirName[8]);
+#endif
