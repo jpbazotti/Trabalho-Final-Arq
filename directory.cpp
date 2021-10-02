@@ -21,6 +21,8 @@ void DIR(FILE *dir){
 	}
 }
 
+//bool remove(char* path){}
+
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
