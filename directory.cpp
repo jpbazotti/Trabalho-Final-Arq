@@ -1,6 +1,7 @@
 #include "directory.h"
 
 char* getFileName(dirEntry Entry){
+	//pastas sao arquivos, porem a sua extensao nao aparece
 	if(strcmp(Entry.extension,"dir")){
 		return Entry.name;
 	}else{
