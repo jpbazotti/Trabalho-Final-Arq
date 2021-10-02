@@ -7,6 +7,7 @@
 #include <math.h>
 #include <string.h>
 #include "clusterManagement.h"
+#include "fileSystemCreator.h"
 using namespace std;
 typedef struct
 {
@@ -16,7 +17,7 @@ typedef struct
 } dirEntry;
 
 //entra na pasta com o nome que foi passado, se ela existir no diretorio atual
-bool gotoDir(char name[], FILE *dir);
+bool gotoDir(char *name, FILE *dir, FileSystem fs);
 
 //faz o comando cd
 bool CD(char *names, FILE *dir, FileSystem fs);

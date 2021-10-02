@@ -25,6 +25,11 @@ int main()
 
         fseek(file, startOffset, SEEK_SET);
         DIR(file);
+        char arquivo[20] = "teste";
+        gotoDir(arquivo, file, fs);
+        DIR(file);
     }
+    //CD(char *names, FILE *dir, FileSystem fs);
+    
     return 0;
 }

@@ -2,9 +2,24 @@
 #include "fileSystem.h"
 #include "fileSystemCreator.h"
 
+char *getFileName(dirEntry *Entry)
+{
+    //pastas sao arquivos, porem a sua extensao nao aparece
+
+    if (strcmp(Entry->extension, "dir") == 0)
+    {
+        return Entry->name;
+    }
+    else
+    {
+        return strcat(strcat(Entry->name, "."), Entry->extension);
+    }
+}
+
 bool gotoDir(char *name, FILE *dir, FileSystem fs)
 {
     bool exists = false;
+    int8 index;
     while (1)
     {
         dirEntry Entry;
@@ -13,7 +28,8 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
         {
             break;
         }
-        if (strcmp(getFileName(&Entry), name))
+        char* aux = getFileName(&Entry);
+        if (strcmp(aux, name))
         {
             if (strcmp(Entry.extension, "dir") == 0)
             {
@@ -21,9 +37,10 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
             }
             break;
         }
-        int index = Entry.startCluster;
+        index = Entry.startCluster;
     }
-    //fseek
+    fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, index), SEEK_SET);
+    return exists;
 }
 
 bool CD(char *names, FILE *dir, FileSystem fs)
@@ -45,20 +62,6 @@ bool CD(char *names, FILE *dir, FileSystem fs)
     return true;
 }
 
-char *getFileName(dirEntry *Entry)
-{
-    //pastas sao arquivos, porem a sua extensao nao aparece
-
-    if (strcmp(Entry->extension, "dir") == 0)
-    {
-        return strcat(Entry->name, "\n");
-    }
-    else
-    {
-        return strcat(strcat(Entry->name, "."), strcat(Entry->extension, "\n"));
-    }
-}
-
 void DIR(FILE *dir)
 {
     while (1)
@@ -69,7 +72,7 @@ void DIR(FILE *dir)
         {
             break;
         }
-        cout << getFileName(&Entry);
+        cout << getFileName(&Entry) << "\n";
     }
 }
 
