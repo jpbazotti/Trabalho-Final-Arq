@@ -1,6 +1,6 @@
 #ifndef directory_h
 #define directory_h
-#include <definitions.h>
+#include "definitions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
