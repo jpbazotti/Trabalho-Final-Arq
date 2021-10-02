@@ -16,7 +16,7 @@ void DIR(FILE *dir){
 			break;
 		}
 		fgets(Entry.extension, 4, dir);
-		cout << Entry.name << "." << Entry.extension << "\n";
+		cout << getFileName(Entry) << "\n";
 	}
 }
 
