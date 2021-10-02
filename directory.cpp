@@ -1,19 +1,19 @@
 #include "directory.h""
 
-bool DIR(FILE *dir){
-  while(1){
-    char *cache;
-    fread(&cache, sizeof(int8), 1, dir);
-    if(cache[0] == 28){
-      break;
-    }
-    fseek(dir, 0, SEEK_CUR-1);
-    fgets(&cache, sizeof(int8), 9, dir);
-    cout << cache << ".";
-    fgets(&cache, sizeof(int8), 4, dir);
-    cout << cache << "\n";
-    fseek(dir, 1, SEEK_CUR);
-  }
+void DIR(FILE *dir){
+	while(1){
+		char *cache;
+		fread(&cache, sizeof(int8), 1, dir);
+		if(cache[0] == 28){
+			break;
+		}
+		fseek(dir, -1, SEEK_CUR);
+		fgets(cache, 9, dir);
+		cout << cache << ".";
+		fgets(cache, 4, dir);
+		cout << cache << "\n";
+		fseek(dir, 1, SEEK_CUR);
+	}
 }
 
 void createDir(FILE *file, int8 curDir,char dirName[8],int8 clusterSize, int8 indexSize){
