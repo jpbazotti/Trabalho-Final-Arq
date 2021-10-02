@@ -1,6 +1,6 @@
 #ifndef directory_h
 #define directory_h
-#include <definitions.h>
+#include "definitions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -17,6 +17,6 @@ typedef struct
     int8 startCluster;
 } dirEntry;
 
-bool DIR(FILE *dir);
+void DIR(FILE *dir);
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize);
 #endif

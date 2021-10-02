@@ -15,7 +15,7 @@ void DIR(FILE *dir){
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
-    int dirOffset = 4 + pow(2, indexSize) + curDir * pow(2, clusterSize);
+    int dirOffset = offSetCalc(indexSize, clusterSize,curDir);
     dirEntry newEntry;
     strcpy(newEntry.name, dirName);
     strcpy(newEntry.extension, "dir");
