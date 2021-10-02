@@ -2,17 +2,13 @@
 
 void DIR(FILE *dir){
 	while(1){
-		char *cache;
-		fread(&cache, sizeof(int8), 1, dir);
-		if(cache[0] == 28){
+		dirEntry Entry;
+		fgets(Entry.name, 9, dir);
+		if(Entry.name[0] == 28){
 			break;
 		}
-		fseek(dir, -1, SEEK_CUR);
-		fgets(cache, 9, dir);
-		cout << cache << ".";
-		fgets(cache, 4, dir);
-		cout << cache << "\n";
-		fseek(dir, 1, SEEK_CUR);
+		fgets(Entry.extension, 4, dir);
+		cout << Entry.name << "." << Entry.extension << "\n";
 	}
 }
 
