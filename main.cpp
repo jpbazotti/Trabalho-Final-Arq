@@ -2,8 +2,7 @@
 #include <fstream>
 #include <string>
 #include "fileSystemCreator.h"
-#include "directory.h"
-#include "file.h"
+#include "fileSystem.h"
 using namespace std;
 int main(){
     FileSystem fs;
