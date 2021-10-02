@@ -1,23 +1,23 @@
 #include "directory.h"
 
-char* getFileName(dirEntry Entry){
+void getFileName(dirEntry *Entry){
 	//pastas sao arquivos, porem a sua extensao nao aparece
-	if(strcmp(Entry.extension,"dir")){
-		return Entry.name;
+
+	if(strcmp(Entry->extension,"dir")==0){
+		cout << Entry->name << "\n";
 	}else{
-		return Entry.name << "." << Entry.extension;
+		cout << Entry->name << "." << Entry->extension << "\n";
 	}
 }
 
 void DIR(FILE *dir){
 	while(1){
 		dirEntry Entry;
-		fgets(Entry.name, 9, dir);
+        fread(&Entry, sizeof(dirEntry), 1, dir);
 		if(Entry.name[0] == 28){
 			break;
 		}
-		fgets(Entry.extension, 4, dir);
-		cout << getFileName(Entry) << "\n";
+		getFileName(&Entry);
 	}
 }
 
