@@ -17,6 +17,7 @@ typedef struct
     int8 startCluster;
 } dirEntry;
 
-bool DIR(FILE *dir);
+char* getFileName(dirEntry Entry);
+void DIR(FILE *dir);
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize);
 #endif

@@ -1,5 +1,13 @@
 #include "directory.h"
 
+char* getFileName(dirEntry Entry){
+	if(strcmp(Entry.extension,"dir")){
+		return Entry.name;
+	}else{
+		return Entry.name << "." << Entry.extension;
+	}
+}
+
 void DIR(FILE *dir){
 	while(1){
 		dirEntry Entry;
