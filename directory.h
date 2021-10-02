@@ -23,5 +23,8 @@ char* getFileName(dirEntry Entry);
 //faz o commando DIR em um cluster somente
 void DIR(FILE *dir);
 
+//faz o comando RM
+bool remove(char* name);
+
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize);
 #endif
