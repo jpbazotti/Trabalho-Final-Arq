@@ -18,7 +18,6 @@ char *getFileName(dirEntry *Entry)
 
 bool gotoDir(char *name, FILE *dir, FileSystem fs)
 {
-    bool exists = false;
     int8 index;
     while (1)
     {
@@ -26,49 +25,50 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
         fread(&Entry, sizeof(dirEntry), 1, dir);
         if (Entry.name[0] == 28)
         {
-            break;
+            return false;
         }
         char* aux = getFileName(&Entry);
         if (strcmp(aux, name) == 0)
         {
             if (strcmp(Entry.extension, "dir") == 0)
             {
-                exists = true;
+                index = Entry.startCluster;
+                fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, index), SEEK_SET);
+                return true;
             }
-            break;
         }
-        index = Entry.startCluster;
     }
-    fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, index), SEEK_SET);
-    return exists;
+    
 }
 
-bool CD(char *names, FILE *dir, FileSystem fs)
+bool CD(char *names, FILE *dir, FileSystem fs, int currentClusterIndex)
 {
-    //make code to get current offset
-
+    //get current offset
+    int offset = offSetCalc(fs.indexSize, fs.clusterSize, currentClusterIndex);
+    //Verifica se o path contem "root"
+    char *name;
+    name = strtok(names, "/");
+    if(strcmp(name, "root") != 0){
+        return false;
+    }
     //reseta o ponteiro do FS
     int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
     fseek(dir, startOffset, SEEK_SET);
     //Encontra a pasta a partir do path
-    char *name;
-    name = strtok(names, "/");
-    if(strcmp(name, "root") != 0){
-        return 0;
-    }
     while (1)
     {
         name = strtok(NULL, "/");
         if(name == NULL){
+            return false;
             break;
         }
         if (!gotoDir(name, dir, fs))
         {
             cout << "Arquivo ou pasta nao encontrado.\n";
+            fseek(dir, offset, SEEK_SET);
             return false;
-            //go back to the original offset
+            break;
         }
-        
     }
     return true;
 }

@@ -20,7 +20,7 @@ typedef struct
 bool gotoDir(char *name, FILE *dir, FileSystem fs);
 
 //faz o comando cd
-bool CD(char *names, FILE *dir, FileSystem fs);
+bool CD(char *names, FILE *dir, FileSystem fs, int currentClusterIndex);
 
 //retorna o nome do arquivo
 void getFileName(dirEntry Entry);

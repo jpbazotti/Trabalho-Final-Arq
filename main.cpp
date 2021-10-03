@@ -24,28 +24,19 @@ int main()
         createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
 
         fseek(file, startOffset, SEEK_SET);
-        cout << "0\n";
-        DIR(file);
-        fseek(file, startOffset, SEEK_SET);
-        char arquivo1[8] = "root";
-        arquivo1[0] = 'r';
-        arquivo1[1] = 'o';
-        arquivo1[2] = 'o';
-        arquivo1[3] = 't';
-        arquivo1[4] = 0;
-        arquivo1[5] = 0;
-        arquivo1[6] = 0;
-        arquivo1[7] = 0;
-        char arquivo2[8] = "teste";
-        gotoDir(arquivo1, file, fs);
-        gotoDir(arquivo2, file, fs);
         cout << "1\n";
         DIR(file);
-        fread(&arquivo1, sizeof(dirEntry), 1, file);
         fseek(file, startOffset, SEEK_SET);
-        char path[20] = "/root/teste";
-        CD(path, file, fs);
+        char arquivo2[6] = "teste";
+        gotoDir(arquivo2, file, fs);
         cout << "2\n";
+        DIR(file);
+        fseek(file, startOffset, SEEK_SET);
+        char path[20] = "/root/tes";
+        cout << "3\n";
+        //create function to get current clusterIndex to use on CD
+        CD(path, file, fs, fs.rootStart);
+        cout << "4\n";
         DIR(file);
     }
     
