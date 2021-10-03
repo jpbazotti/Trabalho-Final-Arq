@@ -29,7 +29,7 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
             break;
         }
         char* aux = getFileName(&Entry);
-        if (strcmp(aux, name))
+        if (strcmp(aux, name) == 0)
         {
             if (strcmp(Entry.extension, "dir") == 0)
             {
@@ -45,19 +45,30 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
 
 bool CD(char *names, FILE *dir, FileSystem fs)
 {
+    //make code to get current offset
+
     //reseta o ponteiro do FS
     int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
     fseek(dir, startOffset, SEEK_SET);
     //Encontra a pasta a partir do path
     char *name;
     name = strtok(names, "/");
-    while (name != NULL)
+    if(strcmp(name, "root") != 0){
+        return 0;
+    }
+    while (1)
     {
         name = strtok(NULL, "/");
+        if(name == NULL){
+            break;
+        }
         if (!gotoDir(name, dir, fs))
         {
+            cout << "Arquivo ou pasta nao encontrado.\n";
             return false;
+            //go back to the original offset
         }
+        
     }
     return true;
 }

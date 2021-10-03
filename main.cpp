@@ -24,12 +24,30 @@ int main()
         createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
 
         fseek(file, startOffset, SEEK_SET);
+        cout << "0\n";
         DIR(file);
-        char arquivo[20] = "teste";
-        gotoDir(arquivo, file, fs);
+        fseek(file, startOffset, SEEK_SET);
+        char arquivo1[8] = "root";
+        arquivo1[0] = 'r';
+        arquivo1[1] = 'o';
+        arquivo1[2] = 'o';
+        arquivo1[3] = 't';
+        arquivo1[4] = 0;
+        arquivo1[5] = 0;
+        arquivo1[6] = 0;
+        arquivo1[7] = 0;
+        char arquivo2[8] = "teste";
+        gotoDir(arquivo1, file, fs);
+        gotoDir(arquivo2, file, fs);
+        cout << "1\n";
+        DIR(file);
+        fread(&arquivo1, sizeof(dirEntry), 1, file);
+        fseek(file, startOffset, SEEK_SET);
+        char path[20] = "/root/teste";
+        CD(path, file, fs);
+        cout << "2\n";
         DIR(file);
     }
-    //CD(char *names, FILE *dir, FileSystem fs);
     
     return 0;
 }

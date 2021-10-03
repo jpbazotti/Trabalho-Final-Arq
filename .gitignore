@@ -1,4 +1,4 @@
 
 *.json
-app.exe
-main.bin
+*.exe
+*.bin
