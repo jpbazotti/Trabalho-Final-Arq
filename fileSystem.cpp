@@ -89,6 +89,7 @@ void DIR(FILE *dir)
 
 //bool remove(char* path){}
 
+//cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
 void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
@@ -102,11 +103,13 @@ void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 
     do
     {
         fread(&current, sizeof(int8), 1, file);
-    } while (current != 28);
+    } while ((current != 28)||(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     fwrite(&eof, sizeof(int8), 1, file);
 }
+
+//cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
 void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
@@ -120,7 +123,7 @@ void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4]
     do
     {
         fread(&current, sizeof(int8), 1, file);
-    } while (current != 28);
+    } while ((current != 28)||(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     fwrite(&eof, sizeof(int8), 1, file);
