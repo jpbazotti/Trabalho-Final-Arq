@@ -144,15 +144,19 @@ char* breakePath(char* path){
 
 bool RM(char* path, FILE *file, FileSystem fs, int8 *clusterIndex){
     //Quebra a string para encontrar o nome do arquivo
-
+    char* name = breakePath(path);
 
     int8 index = *clusterIndex;
     if(CD(path, file, fs, &index)){
+        gotoCluster(file, index, fs);
+        DIR(file);
+        gotoCluster(file, index, fs);
         //remove from dir
         //remove from index
     }else{
-        gotoCluster(file, *clusterIndex, fs);
+        return false;
     }
+    return true;
 }
 
 void createDir(FILE *file, int8 curDir, const char dirName[9], int8 clusterSize, int8 indexSize)
