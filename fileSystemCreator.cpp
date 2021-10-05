@@ -1,12 +1,12 @@
 #include "fileSystemCreator.h"
 using namespace std;
 
-void createFile(FileSystem fs,string filename){
+void createFile(FileSystem fs,char* filename){
     FILE *file;
     int8 full =255;
     int8 empty =0;
     int8 eof = 28;
-    if((file = fopen("main.bin","wb"))){
+    if((file = fopen(filename,"wb"))){
         fwrite(&fs,sizeof(FileSystem),1,file);
         for(int i=0;i<pow(2,8);i++){
              fwrite(&empty,sizeof(int8),1,file);

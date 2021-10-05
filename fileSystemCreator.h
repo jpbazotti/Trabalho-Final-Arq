@@ -12,5 +12,5 @@ int8 indexStart;
 int8 rootStart;
 }FileSystem;
 
-void createFile(FileSystem fs, string filename);
+void createFile(FileSystem fs, char* filename);
 #endif

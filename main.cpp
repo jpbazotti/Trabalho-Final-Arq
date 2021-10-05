@@ -6,63 +6,88 @@
 using namespace std;
 int main()
 {
-    cout<<"start \n";
+    cout << "start \n";
     FileSystem fs;
     FILE *file;
     fs.indexSize = 8;
     fs.clusterSize = 15;
     fs.indexStart = 4;
     fs.rootStart = 0;
-    createFile(fs, "file.bin");
+    char fileName[] = "file.bin";
+    createFile(fs, fileName);
     int8 curDir = fs.rootStart;
     int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
-    if ((file = fopen("main.bin", "r+")))
+    string Path = "/root";
+    string command;
+    string inputPath;
+    string outputPath;
+    if ((file = fopen(fileName, "r+")))
     {
-        cout<< "file open \n";
-        char dirName[9] = "teste";
-        char extName[4] = "txt";
         fseek(file, startOffset, SEEK_SET);
-        createDir(file, curDir, dirName, fs.clusterSize, fs.indexSize);
-        createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
+        while (1)
+        {
+            cout << "\n" << Path << " ";
+            cin >> command;
+            if (command.compare("CD") == 0|| command.compare("cd") == 0)
+            {
+                cin >> inputPath;
+                char * convertedPath = new char[inputPath.size()+1];
+                copy(inputPath.begin(), inputPath.end(), convertedPath);
+                convertedPath[inputPath.size()] = '\0';
+                if(CD(convertedPath,file,fs,&curDir)){
+                    Path=inputPath;
+                }
+                gotoCluster(file, curDir, fs);
 
-        gotoCluster(file, curDir, fs);
-        cout << "1\n";
-        DIR(file);
-        gotoCluster(file, curDir, fs);
-        char arquivo2[6] = "teste";
-        gotoDir(arquivo2, file, fs, &curDir);
-        gotoCluster(file, curDir, fs);
-        cout << "2\n";
-        DIR(file);
-        gotoCluster(file, curDir, fs);
-        char path1[20] = "/root";
-        cout << "3\n";
-        CD(path1, file, fs, &curDir);
-        gotoCluster(file, curDir, fs);
-        cout << "4\n";
-        DIR(file);
-        gotoCluster(file, curDir, fs);
-        
-        char path2[20] = "/root/teste";
-        cout << "5\n";
-        CD(path2, file, fs, &curDir);
-        gotoCluster(file, curDir, fs);
-        createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
-        gotoCluster(file, curDir, fs);
-        DIR(file);
-        cout << "6\n";
-        DIR(file);
-        gotoCluster(file, curDir, fs);
+            }
+            else if (command.compare("DIR") == 0|| command.compare("dir") == 0)
+            {
+                DIR(file);
+                gotoCluster(file, curDir, fs);
 
-        char path3[20] = "/root/tes";
-        cout << "7\n";
-        CD(path3, file, fs, &curDir);
-        gotoCluster(file, curDir, fs);
-        cout << "8\n";
-        DIR(file);
-        gotoCluster(file, curDir, fs);
-        cout << curDir;
+            }
+            else if (command.compare("MKDIR") == 0||command.compare("mkdir") == 0)
+            {
+                cin >> inputPath;
+                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos)
+                {
+                    cout << "Nome de diretorio invalido\n";
+                }
+                else
+                {
+                    createDir(file, curDir, inputPath.c_str(), fs.clusterSize, fs.indexSize);
+                    gotoCluster(file, curDir, fs);
+
+                }
+            }
+            else if (command.compare("MKFILE")==0 || command.compare("mkfile")==0)
+            {
+                cin >> inputPath;
+                string splitter = ".";
+                string name;
+                string extension;
+                auto start = 0U;
+                auto end = inputPath.find(splitter);
+                name = inputPath.substr(start, end - start);
+                start = end + splitter.length();
+                end = inputPath.find(splitter, start);
+                extension = inputPath.substr(start, end - start);
+                cout << name << " " << extension << "\n";
+                if (name.length() > 9 ||extension.length()>3|| inputPath.find("/") != std::string::npos || extension.compare("txt") != 0)
+                {
+                    cout << "Nome de arquivo invalido";
+                }
+                else
+                {
+                    createFile(file, curDir, name.c_str(), extension.c_str(), fs.clusterSize, fs.indexSize);
+                    gotoCluster(file, curDir, fs);
+                }
+            }else{
+                cout << "Comando nao reconhecido";
+            }
+
+        }
+
+        return 0;
     }
-    
-    return 0;
 }

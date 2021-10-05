@@ -18,12 +18,12 @@ char *getFileName(dirEntry *Entry)
 
 bool gotoCluster(FILE *file, int8 clusterIndex, FileSystem fs){
     int offset = offSetCalc(fs.indexSize, fs.clusterSize, clusterIndex);
-    //if(offset <= maxvalue){
+    if(offset < offSetCalc(fs.indexSize,fs.clusterSize,fs.indexSize+1)){
         fseek(file, offset, SEEK_SET);
         return true;
-    //}else{
+    }else{
     return false;
-    //}
+    }
 }
 
 bool gotoDir(char *name, FILE *file, FileSystem fs, int8 *clusterIndex)
@@ -51,12 +51,13 @@ bool gotoDir(char *name, FILE *file, FileSystem fs, int8 *clusterIndex)
     
 }
 
-bool CD(char *names, FILE *file, FileSystem fs, int8 *clusterIndex)
+bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
     //Verifica se o path contem "root"
     char *name;
-    name = strtok(names, "/");
+    name = strtok(path, "/");
     if(strcmp(name, "root") != 0){
+        cout << "Arquivo ou pasta nao encontrado.\n";
         return false;
     }
     //reseta o ponteiro para o diretorio root (necessario para o funcionamento da funcao)
@@ -107,8 +108,7 @@ void DIR(FILE *file)
 
 //bool remove(char* path){}
 
-//cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize)
+void createDir(FILE *file, int8 curDir, const char dirName[9], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
     int dirOffset = offSetCalc(indexSize, clusterSize, curDir);
@@ -124,11 +124,12 @@ void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 
     } while ((current != 28)&&(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
+    if(current == 28){
     fwrite(&eof, sizeof(int8), 1, file);
+    }
 }
 
-//cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4], int8 clusterSize, int8 indexSize)
+void createFile(FILE *file, int8 curDir, const char fileName[9],const  char extensionName[4], int8 clusterSize, int8 indexSize)
 {
     int8 eof = 28;
     int dirOffset = offSetCalc(indexSize, clusterSize, curDir);
@@ -144,5 +145,11 @@ void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4]
     } while ((current != 28)&&(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
+    if(current == 28){
     fwrite(&eof, sizeof(int8), 1, file);
+    }
+}
+
+void rename(){
+    
 }

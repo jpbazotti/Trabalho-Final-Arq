@@ -34,7 +34,9 @@ void DIR(FILE *dir);
 //faz o comando RM
 bool remove(char *name);
 
-void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 indexSize);
-void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4], int8 clusterSize, int8 indexSize);
+//cria novo diretorio em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
+void createDir(FILE *file, int8 curDir,const char dirName[9], int8 clusterSize, int8 indexSize);
+//cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
+void createFile(FILE *file, int8 curDir, const char fileName[9],const char extensionName[4], int8 clusterSize, int8 indexSize);
 
 #endif
