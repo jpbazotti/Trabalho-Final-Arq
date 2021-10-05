@@ -21,35 +21,36 @@ int main()
     string command;
     string inputPath;
     string outputPath;
+    char *convertedPath;
     if ((file = fopen(fileName, "r+")))
     {
         fseek(file, startOffset, SEEK_SET);
         while (1)
         {
-            cout << "\n" << Path << " ";
+            cout << "\n"
+                 << Path << " ";
             cin >> command;
-            if (command.compare("CD") == 0|| command.compare("cd") == 0)
+            if (command.compare("CD") == 0 || command.compare("cd") == 0)
             {
                 cin >> inputPath;
-                char * convertedPath = new char[inputPath.size()+1];
+                convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(CD(convertedPath,file,fs,&curDir)){
-                    Path=inputPath;
+                if (CD(convertedPath, file, fs, &curDir))
+                {
+                    Path = inputPath;
                 }
                 gotoCluster(file, curDir, fs);
-
             }
-            else if (command.compare("DIR") == 0|| command.compare("dir") == 0)
+            else if (command.compare("DIR") == 0 || command.compare("dir") == 0)
             {
                 DIR(file);
                 gotoCluster(file, curDir, fs);
-
             }
-            else if (command.compare("MKDIR") == 0||command.compare("mkdir") == 0)
+            else if (command.compare("MKDIR") == 0 || command.compare("mkdir") == 0)
             {
                 cin >> inputPath;
-                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos|| inputPath.find(" ") != std::string::npos)
+                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos || inputPath.find(" ") != std::string::npos)
                 {
                     cout << "Nome de diretorio invalido\n";
                 }
@@ -57,10 +58,9 @@ int main()
                 {
                     createDir(file, curDir, inputPath.c_str(), fs.clusterSize, fs.indexSize);
                     gotoCluster(file, curDir, fs);
-
                 }
             }
-            else if (command.compare("MKFILE")==0 || command.compare("mkfile")==0)
+            else if (command.compare("MKFILE") == 0 || command.compare("mkfile") == 0)
             {
                 cin >> inputPath;
                 string splitter = ".";
@@ -73,7 +73,7 @@ int main()
                 end = inputPath.find(splitter, start);
                 extension = inputPath.substr(start, end - start);
                 cout << name << " " << extension << "\n";
-                if (name.length() > 9 ||extension.length()>3|| inputPath.find("/") != std::string::npos || extension.compare("txt") != 0|| inputPath.find(" ") != std::string::npos)
+                if (name.length() > 9 || extension.length() > 3 || inputPath.find("/") != std::string::npos || extension.compare("txt") != 0 || inputPath.find(" ") != std::string::npos)
                 {
                     cout << "Nome de arquivo invalido";
                 }
@@ -82,17 +82,16 @@ int main()
                     createFile(file, curDir, name.c_str(), extension.c_str(), fs.clusterSize, fs.indexSize);
                     gotoCluster(file, curDir, fs);
                 }
-            }else{
-                char teste[]="/root/teste/a";
-                if(validPath(teste))
-                cout << "a";
-
-                char teste2[]="/root/teste//a";
-                if(validPath(teste2))
-                cout << "b";
+            }
+            else
+            {
+                cin >> inputPath;
+                convertedPath = new char[inputPath.size() + 1];
+                copy(inputPath.begin(), inputPath.end(), convertedPath);
+                convertedPath[inputPath.size()] = '\0';
+                RM(convertedPath, file, fs, &curDir);
                 //cout << "Comando nao reconhecido";
             }
-
         }
 
         return 0;

@@ -1,7 +1,8 @@
 #include "clusterManagement.h"
 
-int offSetCalc(int8 indexSize,int8 clusterSize,int8 curDir){
-        return (4 + pow(2, indexSize) + curDir * pow(2, clusterSize));
+int offSetCalc(int8 indexSize, int8 clusterSize, int8 curDir)
+{
+    return (4 + pow(2, indexSize) + curDir * pow(2, clusterSize));
 }
 
 int8 findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
@@ -25,4 +26,3 @@ int8 findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
     }
     return -1;
 }
-
