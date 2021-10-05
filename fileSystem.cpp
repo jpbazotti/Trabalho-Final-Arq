@@ -106,7 +106,54 @@ void DIR(FILE *file)
     }
 }
 
-//bool remove(char* path){}
+bool validPath(char* path){
+    char *name;
+    name = strtok(path, "/");
+    if(strcmp(name, "root") != 0){
+        return false;
+    }
+    for (int i = 0; path[i] != NULL; i++)
+    {
+        if(i>0){
+            if(path[i] == '/' && path[i-1] == '/'){
+                return false;
+                break;
+            }
+        }
+        if(path[i] == NULL && path[i-1] == '/'){
+            return false;
+            break;
+        }
+    }
+    return true;
+}
+
+char* breakePath(char* path){
+    char* name;
+    int j = 0;
+    for (int i = 0; path[i] != NULL; i++)
+    {
+        if(path[i] == '/'){
+            j = i;
+        }
+    }
+    name = &(path[j+1]);
+    path[j] = NULL;
+    return name;
+}
+
+bool RM(char* path, FILE *file, FileSystem fs, int8 *clusterIndex){
+    //Quebra a string para encontrar o nome do arquivo
+
+
+    int8 index = *clusterIndex;
+    if(CD(path, file, fs, &index)){
+        //remove from dir
+        //remove from index
+    }else{
+        gotoCluster(file, *clusterIndex, fs);
+    }
+}
 
 void createDir(FILE *file, int8 curDir, const char dirName[9], int8 clusterSize, int8 indexSize)
 {
