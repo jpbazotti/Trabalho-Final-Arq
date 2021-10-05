@@ -112,7 +112,7 @@ bool validPath(char* path){
     if(strcmp(name, "root") != 0){
         return false;
     }
-    for (int i = 0; path[i] != NULL; i++)
+    for (int i = 0; path[i] != '\0'; i++)
     {
         if(i>0){
             if(path[i] == '/' && path[i-1] == '/'){
@@ -120,7 +120,7 @@ bool validPath(char* path){
                 break;
             }
         }
-        if(path[i] == NULL && path[i-1] == '/'){
+        if(path[i] == '\0' && path[i-1] == '/'){
             return false;
             break;
         }
@@ -131,14 +131,14 @@ bool validPath(char* path){
 char* breakePath(char* path){
     char* name;
     int j = 0;
-    for (int i = 0; path[i] != NULL; i++)
+    for (int i = 0; path[i] != '\0'; i++)
     {
         if(path[i] == '/'){
             j = i;
         }
     }
     name = &(path[j+1]);
-    path[j] = NULL;
+    path[j] = '\0';
     return name;
 }
 
@@ -198,5 +198,5 @@ void createFile(FILE *file, int8 curDir, const char fileName[9],const  char exte
 }
 
 void rename(){
-    
+
 }

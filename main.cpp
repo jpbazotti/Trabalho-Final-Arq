@@ -83,7 +83,14 @@ int main()
                     gotoCluster(file, curDir, fs);
                 }
             }else{
-                cout << "Comando nao reconhecido";
+                char teste[]="/root/teste/a";
+                if(validPath(teste))
+                cout << "a";
+
+                char teste2[]="/root/teste//a";
+                if(validPath(teste2))
+                cout << "b";
+                //cout << "Comando nao reconhecido";
             }
 
         }

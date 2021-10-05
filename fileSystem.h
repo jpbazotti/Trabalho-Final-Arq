@@ -26,10 +26,15 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs, int8 *clusterIndex);
 bool CD(char *names, FILE *dir, FileSystem fs, int8 *clusterIndex);
 
 //retorna o nome do arquivo
-void getFileName(dirEntry Entry);
+char * getFileName(dirEntry Entry);
 
 //faz o commando DIR em um cluster somente
 void DIR(FILE *dir);
+
+bool validPath(char* path);
+
+char* breakePath(char* path);
+
 
 //faz o comando RM
 bool remove(char *name);
@@ -38,5 +43,6 @@ bool remove(char *name);
 void createDir(FILE *file, int8 curDir,const char dirName[9], int8 clusterSize, int8 indexSize);
 //cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
 void createFile(FILE *file, int8 curDir, const char fileName[9],const char extensionName[4], int8 clusterSize, int8 indexSize);
+
 
 #endif
