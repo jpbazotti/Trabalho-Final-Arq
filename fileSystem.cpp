@@ -121,7 +121,7 @@ void createDir(FILE *file, int8 curDir, char dirName[9], int8 clusterSize, int8 
     do
     {
         fread(&current, sizeof(int8), 1, file);
-    } while ((current != 28)||(current != 29));
+    } while ((current != 28)&&(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     fwrite(&eof, sizeof(int8), 1, file);
@@ -141,7 +141,7 @@ void createFile(FILE *file, int8 curDir, char fileName[9], char extensionName[4]
     do
     {
         fread(&current, sizeof(int8), 1, file);
-    } while ((current != 28)||(current != 29));
+    } while ((current != 28)&&(current != 29));
     fseek(file, -1, SEEK_CUR);
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     fwrite(&eof, sizeof(int8), 1, file);

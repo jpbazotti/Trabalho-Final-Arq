@@ -6,6 +6,7 @@
 using namespace std;
 int main()
 {
+    cout<<"start \n";
     FileSystem fs;
     FILE *file;
     fs.indexSize = 8;
@@ -17,6 +18,7 @@ int main()
     int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
     if ((file = fopen("main.bin", "r+")))
     {
+        cout<< "file open \n";
         char dirName[9] = "teste";
         char extName[4] = "txt";
         fseek(file, startOffset, SEEK_SET);
@@ -45,6 +47,9 @@ int main()
         cout << "5\n";
         CD(path2, file, fs, &curDir);
         gotoCluster(file, curDir, fs);
+        createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
+        gotoCluster(file, curDir, fs);
+        DIR(file);
         cout << "6\n";
         DIR(file);
         gotoCluster(file, curDir, fs);
