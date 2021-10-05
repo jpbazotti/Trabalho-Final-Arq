@@ -127,36 +127,6 @@ bool validPath(char* path){
     }
     return true;
 }
-<<<<<<< Updated upstream
-=======
-
-char* breakePath(char* path){
-    char* name;
-    int j = 0;
-    for (int i = 0; path[i] != NULL; i++)
-    {
-        if(path[i] == '/'){
-            j = i;
-        }
-    }
-    name = &(path[j+1]);
-    path[j] = NULL;
-    return name;
-}
-
-bool RM(char* path, FILE *file, FileSystem fs, int8 *clusterIndex){
-    //Quebra a string para encontrar o nome do arquivo
-
-
-    int8 index = *clusterIndex;
-    if(CD(path, file, fs, &index)){
-        //remove from dir
-        //remove from index
-    }else{
-        gotoCluster(file, *clusterIndex, fs);
-    }
-}
->>>>>>> Stashed changes
 
 char* breakePath(char* path){
     char* name;
