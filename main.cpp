@@ -49,7 +49,7 @@ int main()
             else if (command.compare("MKDIR") == 0||command.compare("mkdir") == 0)
             {
                 cin >> inputPath;
-                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos)
+                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos|| inputPath.find(" ") != std::string::npos)
                 {
                     cout << "Nome de diretorio invalido\n";
                 }
@@ -73,7 +73,7 @@ int main()
                 end = inputPath.find(splitter, start);
                 extension = inputPath.substr(start, end - start);
                 cout << name << " " << extension << "\n";
-                if (name.length() > 9 ||extension.length()>3|| inputPath.find("/") != std::string::npos || extension.compare("txt") != 0)
+                if (name.length() > 9 ||extension.length()>3|| inputPath.find("/") != std::string::npos || extension.compare("txt") != 0|| inputPath.find(" ") != std::string::npos)
                 {
                     cout << "Nome de arquivo invalido";
                 }
