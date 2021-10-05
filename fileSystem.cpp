@@ -16,13 +16,22 @@ char *getFileName(dirEntry *Entry)
     }
 }
 
-bool gotoDir(char *name, FILE *dir, FileSystem fs)
+bool gotoCluster(FILE *file, int8 clusterIndex, FileSystem fs){
+    int offset = offSetCalc(fs.indexSize, fs.clusterSize, clusterIndex);
+    //if(offset <= maxvalue){
+        fseek(file, offset, SEEK_SET);
+        return true;
+    //}else{
+    return false;
+    //}
+}
+
+bool gotoDir(char *name, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
-    int8 index;
     while (1)
     {
         dirEntry Entry;
-        fread(&Entry, sizeof(dirEntry), 1, dir);
+        fread(&Entry, sizeof(dirEntry), 1, file);
         if (Entry.name[0] == 28)
         {
             return false;
@@ -32,8 +41,9 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
         {
             if (strcmp(Entry.extension, "dir") == 0)
             {
-                index = Entry.startCluster;
-                fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, index), SEEK_SET);
+                *clusterIndex = Entry.startCluster;
+                //fseek is now on CD function
+                //fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, *clusterIndex), SEEK_SET);
                 return true;
             }
         }
@@ -41,49 +51,57 @@ bool gotoDir(char *name, FILE *dir, FileSystem fs)
     
 }
 
-bool CD(char *names, FILE *dir, FileSystem fs, int currentClusterIndex)
+bool CD(char *names, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
-    //get current offset
-    int offset = offSetCalc(fs.indexSize, fs.clusterSize, currentClusterIndex);
     //Verifica se o path contem "root"
     char *name;
     name = strtok(names, "/");
     if(strcmp(name, "root") != 0){
         return false;
     }
-    //reseta o ponteiro do FS
-    int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
-    fseek(dir, startOffset, SEEK_SET);
+    //reseta o ponteiro para o diretorio root (necessario para o funcionamento da funcao)
+    int8 index = fs.rootStart;
+    int offset = offSetCalc(fs.indexSize, fs.clusterSize, index);
+    fseek(file, offset, SEEK_SET);
     //Encontra a pasta a partir do path
     while (1)
     {
         name = strtok(NULL, "/");
         if(name == NULL){
-            return false;
+            *clusterIndex = index;
+            return true;
             break;
         }
-        if (!gotoDir(name, dir, fs))
+        if (!gotoDir(name, file, fs, &index))
         {
             cout << "Arquivo ou pasta nao encontrado.\n";
-            fseek(dir, offset, SEEK_SET);
             return false;
             break;
         }
+        //fseek movido para função separada
+        //offset = offSetCalc(fs.indexSize, fs.clusterSize, index);
+        //fseek(dir, offset, SEEK_SET);
     }
-    return true;
 }
 
-void DIR(FILE *dir)
+void DIR(FILE *file)
 {
-    while (1)
+    dirEntry Entry;
+    fread(&Entry, sizeof(dirEntry), 1, file);
+    if (Entry.name[0] == 28)
     {
-        dirEntry Entry;
-        fread(&Entry, sizeof(dirEntry), 1, dir);
-        if (Entry.name[0] == 28)
-        {
-            break;
-        }
+        cout << "<vazio>\n";
+    }else{
         cout << getFileName(&Entry) << "\n";
+        while (1)
+        {
+            fread(&Entry, sizeof(dirEntry), 1, file);
+            if (Entry.name[0] == 28)
+            {
+                break;
+            }
+            cout << getFileName(&Entry) << "\n";
+        }
     }
 }
 

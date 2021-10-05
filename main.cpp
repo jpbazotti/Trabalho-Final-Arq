@@ -23,21 +23,40 @@ int main()
         createDir(file, curDir, dirName, fs.clusterSize, fs.indexSize);
         createFile(file, curDir, dirName, extName, fs.clusterSize, fs.indexSize);
 
-        fseek(file, startOffset, SEEK_SET);
+        gotoCluster(file, curDir, fs);
         cout << "1\n";
         DIR(file);
-        fseek(file, startOffset, SEEK_SET);
+        gotoCluster(file, curDir, fs);
         char arquivo2[6] = "teste";
-        gotoDir(arquivo2, file, fs);
+        gotoDir(arquivo2, file, fs, &curDir);
+        gotoCluster(file, curDir, fs);
         cout << "2\n";
         DIR(file);
-        fseek(file, startOffset, SEEK_SET);
-        char path[20] = "/root/tes";
+        gotoCluster(file, curDir, fs);
+        char path1[20] = "/root";
         cout << "3\n";
-        //create function to get current clusterIndex to use on CD
-        CD(path, file, fs, fs.rootStart);
+        CD(path1, file, fs, &curDir);
+        gotoCluster(file, curDir, fs);
         cout << "4\n";
         DIR(file);
+        gotoCluster(file, curDir, fs);
+        
+        char path2[20] = "/root/teste";
+        cout << "5\n";
+        CD(path2, file, fs, &curDir);
+        gotoCluster(file, curDir, fs);
+        cout << "6\n";
+        DIR(file);
+        gotoCluster(file, curDir, fs);
+
+        char path3[20] = "/root/tes";
+        cout << "7\n";
+        CD(path3, file, fs, &curDir);
+        gotoCluster(file, curDir, fs);
+        cout << "8\n";
+        DIR(file);
+        gotoCluster(file, curDir, fs);
+        cout << curDir;
     }
     
     return 0;

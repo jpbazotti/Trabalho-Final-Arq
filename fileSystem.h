@@ -16,11 +16,14 @@ typedef struct
     int8 startCluster;
 } dirEntry;
 
-//entra na pasta com o nome que foi passado, se ela existir no diretorio atual
-bool gotoDir(char *name, FILE *dir, FileSystem fs);
+//Vai para o cluster de numero clusterIndex
+bool gotoCluster(FILE *file, int8 clusterIndex, FileSystem fs);
 
-//faz o comando cd
-bool CD(char *names, FILE *dir, FileSystem fs, int currentClusterIndex);
+//Entra na pasta com o nome que foi passado, se ela existir no diretorio atual. Retorna o cluster atual no ponteiro clusterIndex
+bool gotoDir(char *name, FILE *dir, FileSystem fs, int8 *clusterIndex);
+
+//Faz o comando cd e retorna o cluster atual no ponteiro clusterIndex
+bool CD(char *names, FILE *dir, FileSystem fs, int8 *clusterIndex);
 
 //retorna o nome do arquivo
 void getFileName(dirEntry Entry);
