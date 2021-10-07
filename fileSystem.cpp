@@ -95,15 +95,23 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 bool isDirEmpty(FILE *file)
 {
     int8 first;
-    fread(&first, sizeof(int8), 1, file);
-    fseek(file, (int)-sizeof(int8), SEEK_CUR);
-    if (first == 28)
+    while (1)
     {
-        return true;
-    }
-    else
-    {
-        return false;
+        fread(&first, sizeof(int8), 1, file);
+        if (first == 29)
+        {
+
+        }
+        else if (first == 28)
+        {
+            return true;
+            break;
+        }
+        else{
+            return false;
+            break;
+        }
+        fseek(file, sizeof(dirEntry)-1, SEEK_CUR);
     }
 }
 
