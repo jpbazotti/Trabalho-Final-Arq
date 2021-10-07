@@ -254,7 +254,7 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
                 fwrite(&char29, sizeof(int8), 1, file);
                 break;
             }
-            if (Entry.name[0] == 28)
+            else if (Entry.name[0] == 28)
             {
                 mv = false;
                 break;
@@ -265,14 +265,16 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
         while (1)
         {
             int8 auxChar;
+            int8 char28 = 28;
             fread(&auxChar, sizeof(int8), 1, file);
             if(auxChar==29){
                 fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
             }
             if(auxChar==28){
-                fseek(file, (int)-sizeof(int8), SEEK_CUR);
-                //case 28
+                fseek(file, -sizeof(int8), SEEK_CUR);
+                fwrite(&Entry, sizeof(dirEntry), 1, file);
+                fwrite(&char28, sizeof(int8), 1, file);
             }
             fseek(file, sizeof(dirEntry)-sizeof(int8), SEEK_CUR);
         }
@@ -281,7 +283,6 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
     {
         mv = false;
     }
-    gotoCluster(file, *clusterIndex, fs);
     return mv;
 }
 
