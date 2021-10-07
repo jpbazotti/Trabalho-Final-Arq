@@ -31,8 +31,10 @@ char *getFileName(dirEntry Entry);
 //faz o commando DIR em um cluster somente
 void DIR(FILE *dir);
 
+//Valida o path
 bool validPath(char *path);
 
+//Quebra a string para encontrar o nome do arquivo
 char *breakePath(char *path);
 
 bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex);

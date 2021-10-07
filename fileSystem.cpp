@@ -159,7 +159,6 @@ char *breakePath(char *path)
 
 bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
-    //Quebra a string para encontrar o nome do arquivo
     char *name = breakePath(path);
 
     int8 index = *clusterIndex;
