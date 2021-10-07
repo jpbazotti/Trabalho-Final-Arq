@@ -115,7 +115,7 @@ bool isDirEmpty(FILE *file)
     }
 }
 
-void DIR(FILE *file)
+void DIR(FILE *file,int8 *clusterIndex, FileSystem fs)
 {
     if (isDirEmpty(file))
     {
@@ -123,6 +123,7 @@ void DIR(FILE *file)
     }
     else
     {
+        gotoCluster(file,*clusterIndex,fs);
         dirEntry Entry;
         while (1)
         {
@@ -216,12 +217,17 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
                 if (strcmp(Entry.extension, "dir") == 0)
                 {
                     int8 indexAux = index;
-                    gotoDir(name, file, fs, &indexAux);
+                    cout << entryName << " =entry name \n";
+                    cout << name<< " =name \n";
+                    cout << Entry.extension<< " =entry extension \n";
                     if (!isDirEmpty(file))
                     {
+                        cout<<"nao pulou2\n";
                         rm = false;
                         break;
                     }
+                    gotoCluster(file, indexAux, fs);
+
                 }
                 //remove entry from dir
                 int8 char29 = 29;

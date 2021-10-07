@@ -32,7 +32,7 @@ char *getFileName(dirEntry Entry);
 bool isDirEmpty(FILE *file);
 
 //faz o commando DIR em um cluster somente
-void DIR(FILE *dir);
+void DIR(FILE *file,int8 *clusterIndex, FileSystem fs);
 
 //Valida o path
 bool validPath(char *path);

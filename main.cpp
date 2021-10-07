@@ -46,7 +46,7 @@ int main()
             }
             else if (command.compare("DIR") == 0 || command.compare("dir") == 0)
             {
-                DIR(file);
+                DIR(file,&curDir,fs);
                 gotoCluster(file, curDir, fs);
             }
             else if (command.compare("MKDIR") == 0 || command.compare("mkdir") == 0)
