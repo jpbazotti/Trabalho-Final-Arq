@@ -61,7 +61,8 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     name = strtok(path, "/");
     if (strcmp(name, "root") != 0)
     {
-        cout << "Arquivo ou pasta nao encontrado.\n";
+        //cout removido, usar retorno da funcao no lugar
+        //cout << "Arquivo ou pasta nao encontrado.\n";
         return false;
     }
     //reseta o ponteiro para o diretorio root (necessario para o funcionamento da funcao)
@@ -80,7 +81,8 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
         }
         if (!gotoDir(name, file, fs, &index))
         {
-            cout << "Arquivo ou pasta nao encontrado.\n";
+            //cout removido, usar retorno da funcao no lugar
+            //cout << "Arquivo ou pasta nao encontrado.\n";
             return false;
             break;
         }
@@ -90,17 +92,27 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     }
 }
 
+bool isDirEmpty(FILE *file){
+    int8 first;
+    fread(&first, sizeof(int8), 1, file);
+    fseek(file, -sizeof(int8), SEEK_CUR);
+    if (first == 28)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+
 void DIR(FILE *file)
 {
-    dirEntry Entry;
-    fread(&Entry, sizeof(dirEntry), 1, file);
-    if (Entry.name[0] == 28)
+    if (isDirEmpty(file))
     {
         cout << "<vazio>\n";
     }
     else
     {
-        cout << getFileName(&Entry) << "\n";
+        dirEntry Entry;
         while (1)
         {
             fread(&Entry, sizeof(dirEntry), 1, file);
@@ -115,7 +127,6 @@ void DIR(FILE *file)
 
 bool validPath(char *path)
 {
-
     for (int i = 0; path[i] != '\0'; i++)
     {
         if (i > 0)
@@ -132,9 +143,23 @@ bool validPath(char *path)
             break;
         }
     }
-    char *name;
-    name = strtok(path, "/");
-    if (strcmp(name, "root") != 0)
+    if (path[0] != '/')
+    {
+        return false;
+    }
+    if (path[1] != 'r')
+    {
+        return false;
+    }
+    if (path[2] != 'o')
+    {
+        return false;
+    }
+    if (path[3] != 'o')
+    {
+        return false;
+    }
+    if (path[4] != 't')
     {
         return false;
     }
@@ -160,22 +185,105 @@ char *breakePath(char *path)
 
 bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
-    //Quebra a string para encontrar o nome do arquivo
     char *name = breakePath(path);
+    bool rm = true;
 
     int8 index = *clusterIndex;
     if (CD(path, file, fs, &index))
     {
         gotoCluster(file, index, fs);
-        //remove from dir
-        //remove from index
+        //find name in dir
+        dirEntry Entry;
+        while (1)
+        {
+            fread(&Entry, sizeof(dirEntry), 1, file);
+            char* entryName = getFileName(&Entry);
+            if (strcmp(entryName, name) == 0)
+            {
+                //if dir, check if removable
+                if(strcmp(Entry.extension, "dir") == 0){
+                    int8 indexAux = index;
+                    gotoDir(name, file, fs, &indexAux);
+                    if(!isDirEmpty(file)){
+                        rm = false;
+                        break;
+                    }
+                }
+                //remove entry from dir
+                int8 char29 = 29;
+                fseek(file, -sizeof(dirEntry), SEEK_CUR);
+                fwrite(&char29, sizeof(int8), 1, file);
+                //remove from index
+
+                break;
+            }
+            if (Entry.name[0] == 28)
+            {
+                rm = false;
+                break;
+            }
+        }
     }
     else
     {
-        gotoCluster(file, *clusterIndex, fs);
-        return false;
+        rm = false;
     }
-    return true;
+    gotoCluster(file, *clusterIndex, fs);
+    return rm;
+}
+
+bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterIndex){
+    char *name = breakePath(path1);
+    bool mv = true;
+
+    int8 index1 = *clusterIndex;
+    int8 index2 = *clusterIndex;
+    if (CD(path1, file, fs, &index1) && CD(path2, file, fs, &index2))
+    {
+        gotoCluster(file, index1, fs);
+        //find name in dir
+        dirEntry Entry;
+        while (1)
+        {
+            fread(&Entry, sizeof(dirEntry), 1, file);
+            char* entryName = getFileName(&Entry);
+            if (strcmp(entryName, name) == 0)
+            {
+                //remove entry from path1
+                int8 char29 = 29;
+                fseek(file, -sizeof(dirEntry), SEEK_CUR);
+                fwrite(&char29, sizeof(int8), 1, file);
+                break;
+            }
+            if (Entry.name[0] == 28)
+            {
+                mv = false;
+                break;
+            }
+        }
+        //create new entry in path2
+        gotoCluster(file, index2, fs);
+        while (1)
+        {
+            int8 auxChar;
+            fread(&auxChar, sizeof(int8), 1, file);
+            if(auxChar==29){
+                fseek(file, -sizeof(int8), SEEK_CUR);
+                fwrite(&Entry, sizeof(dirEntry), 1, file);
+            }
+            if(auxChar==28){
+                fseek(file, -sizeof(int8), SEEK_CUR);
+                //case 28
+            }
+            fseek(file, sizeof(dirEntry)-sizeof(int8), SEEK_CUR);
+        }
+    }
+    else
+    {
+        mv = false;
+    }
+    gotoCluster(file, *clusterIndex, fs);
+    return mv;
 }
 
 void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
