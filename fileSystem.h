@@ -41,8 +41,12 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex);
 bool remove(char *name);
 
 //cria novo diretorio em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createDir(FILE *file, int8 curDir, const char dirName[9], int8 clusterSize, int8 indexSize);
+void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs);
+
 //cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createFile(FILE *file, int8 curDir, const char fileName[9], const char extensionName[4], int8 clusterSize, int8 indexSize);
+void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs);
+
+//renomea um arquivo 
+bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clusterIndex);
 
 #endif

@@ -20,8 +20,10 @@ int main()
     string Path = "/root";
     string command;
     string inputPath;
-    string outputPath;
+    string inputPath2;
     char *convertedPath;
+    char *convertedPath2;
+    char *convertedCurrentPath;
     if ((file = fopen(fileName, "r+")))
     {
         fseek(file, startOffset, SEEK_SET);
@@ -56,7 +58,7 @@ int main()
                 }
                 else
                 {
-                    createDir(file, curDir, inputPath.c_str(), fs.clusterSize, fs.indexSize);
+                    createDir(file, curDir, inputPath.c_str(), fs);
                     gotoCluster(file, curDir, fs);
                 }
             }
@@ -72,18 +74,17 @@ int main()
                 start = end + splitter.length();
                 end = inputPath.find(splitter, start);
                 extension = inputPath.substr(start, end - start);
-                cout << name << " " << extension << "\n";
                 if (name.length() > 9 || extension.length() > 3 || inputPath.find("/") != std::string::npos || extension.compare("txt") != 0 || inputPath.find(" ") != std::string::npos)
                 {
                     cout << "Nome de arquivo invalido";
                 }
                 else
                 {
-                    createFile(file, curDir, name.c_str(), extension.c_str(), fs.clusterSize, fs.indexSize);
+                    createFile(file, curDir, name.c_str(), fs);
                     gotoCluster(file, curDir, fs);
                 }
             }
-            else
+            else if (command.compare("RM") == 0 || command.compare("rm") == 0)
             {
                 cin >> inputPath;
                 convertedPath = new char[inputPath.size() + 1];
@@ -91,6 +92,26 @@ int main()
                 convertedPath[inputPath.size()] = '\0';
                 RM(convertedPath, file, fs, &curDir);
                 //cout << "Comando nao reconhecido";
+            }
+            else if (command.compare("RENAME") == 0 || command.compare("rename") == 0)
+            {
+                cin >> inputPath;
+                cin >> inputPath2;
+                convertedPath = new char[inputPath.size() + 1];
+                copy(inputPath.begin(), inputPath.end(), convertedPath);
+                convertedPath[inputPath.size()] = '\0';
+
+                convertedPath2 = new char[inputPath2.size() + 1];
+                copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
+                convertedPath2[inputPath2.size()] = '\0';
+
+                convertedCurrentPath = new char[Path.size() + 1];
+                copy(Path.begin(), Path.end(), convertedCurrentPath);
+                convertedCurrentPath[Path.size()] = '\0';
+                cout << convertedPath << "a";
+                rename(convertedPath, file, convertedPath2, fs, &curDir);
+                CD(convertedCurrentPath, file, fs, &curDir);
+                gotoCluster(file, curDir, fs);
             }
         }
 

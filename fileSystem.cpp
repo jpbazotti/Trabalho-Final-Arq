@@ -154,6 +154,7 @@ char *breakePath(char *path)
     }
     name = &(path[j + 1]);
     path[j] = '\0';
+    cout << name;
     return name;
 }
 
@@ -177,50 +178,125 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     return true;
 }
 
-void createDir(FILE *file, int8 curDir, const char dirName[9], int8 clusterSize, int8 indexSize)
+void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
 {
     int8 eof = 28;
-    int dirOffset = offSetCalc(indexSize, clusterSize, curDir);
+    int dirOffset = offSetCalc(fs.indexSize, fs.clusterSize, curDir);
     dirEntry newEntry;
     strcpy(newEntry.name, dirName);
     strcpy(newEntry.extension, "dir");
-    newEntry.startCluster = findAvailableCluster(file, indexSize, clusterSize);
+    newEntry.startCluster = findAvailableCluster(file, fs.indexSize, fs.clusterSize);
     fseek(file, dirOffset, SEEK_SET);
     int8 current;
     do
     {
+        //acha espaco para colocar o novo diretorio
         fread(&current, sizeof(int8), 1, file);
     } while ((current != 28) && (current != 29));
     fseek(file, -1, SEEK_CUR);
+    //escreve o objeto de entrada do diretorio
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     if (current == 28)
     {
+        //escreve novo final de arquivo se o espaco disponivel estava no final do arquivo
         fwrite(&eof, sizeof(int8), 1, file);
     }
 }
 
-void createFile(FILE *file, int8 curDir, const char fileName[9], const char extensionName[4], int8 clusterSize, int8 indexSize)
+void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
 {
     int8 eof = 28;
-    int dirOffset = offSetCalc(indexSize, clusterSize, curDir);
+    int dirOffset = offSetCalc(fs.indexSize, fs.clusterSize, curDir);
     dirEntry newEntry;
     strcpy(newEntry.name, fileName);
     strcpy(newEntry.extension, "txt");
-    newEntry.startCluster = findAvailableCluster(file, indexSize, clusterSize);
+    newEntry.startCluster = findAvailableCluster(file, fs.indexSize, fs.clusterSize);
     fseek(file, dirOffset, SEEK_SET);
     int8 current;
     do
     {
+        //acha espaco para colocar o novo arquivo
         fread(&current, sizeof(int8), 1, file);
     } while ((current != 28) && (current != 29));
     fseek(file, -1, SEEK_CUR);
+    //escreve o objeto de entrada do diretorio
     fwrite(&newEntry, sizeof(dirEntry), 1, file);
     if (current == 28)
     {
+        //escreve novo final de arquivo se o espaco disponivel estava no final do arquivo
         fwrite(&eof, sizeof(int8), 1, file);
     }
 }
 
-void rename()
+bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clusterIndex)
 {
+    char *oldName = breakePath(path);
+    char *oldExtension;
+    char *newName;
+    char *newExtension;
+    int8 index = *clusterIndex;
+    cout <<"0";
+    if (CD(path, file, fs, &index))
+    {
+        cout <<"0.1";
+        gotoCluster(file, index, fs);
+        dirEntry replaceEntry;
+        dirEntry oldEntry;
+        oldName = strtok(oldName, ".");
+        oldExtension = strtok(NULL, ".");
+        newName = strtok(newFileName, ".");
+        newExtension = strtok(NULL, ".");
+        cout <<"1";
+        if (strlen(newName) < 9)
+        {
+            cout <<"2";
+            strcpy(replaceEntry.name, newName);
+            if (!newExtension && !oldExtension)
+            {
+                cout <<"3";
+                strcpy(replaceEntry.extension, "dir");
+                oldExtension="dir";
+                cout << replaceEntry.extension <<"\n";
+                cout << oldExtension;
+
+            }
+            else if (strcmp(newExtension, "txt") == 0 &&strcmp(oldExtension, "txt") == 0 )
+            {
+                cout <<"4";
+                strcpy(replaceEntry.extension, "txt");
+                cout << replaceEntry.extension <<"\n";
+                cout << oldExtension;
+
+            }
+            else
+            {
+                gotoCluster(file, *clusterIndex, fs);
+                return false;
+            }
+        }
+        else
+        {
+            gotoCluster(file, *clusterIndex, fs);
+            return false;
+        }
+        do
+        {
+            fread(&oldEntry, sizeof(dirEntry), 1, file);
+            if(strcmp(oldEntry.name, oldName) == 0 && strcmp(oldEntry.extension, oldExtension) == 0){
+                replaceEntry.startCluster=oldEntry.startCluster;
+                fseek(file,-14,SEEK_CUR);
+                fwrite(&replaceEntry, sizeof(dirEntry), 1, file);
+                return true;
+                break;
+            }
+        } while (oldEntry.name[0]!=28);
+        gotoCluster(file, *clusterIndex, fs);
+        return false;
+    }
+    else
+    {
+        gotoCluster(file, *clusterIndex, fs);
+        return false;
+    }
+    return true;
 }
