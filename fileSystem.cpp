@@ -207,27 +207,27 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
         gotoCluster(file, index, fs);
         //find name in dir
         dirEntry Entry;
+        int pos = 0;
         while (1)
         {
             fread(&Entry, sizeof(dirEntry), 1, file);
             char *entryName = getFileName(&Entry);
+            pos++;
             if (strcmp(entryName, name) == 0)
             {
                 //if dir, check if removable
                 if (strcmp(Entry.extension, "dir") == 0)
                 {
-                    int8 indexAux = index;
-                    cout << entryName << " =entry name \n";
-                    cout << name<< " =name \n";
-                    cout << Entry.extension<< " =entry extension \n";
-                    if (!isDirEmpty(file))
-                    {
-                        cout<<"nao pulou2\n";
+                    if(!gotoDir(name, file, fs, clusterIndex)){
                         rm = false;
                         break;
                     }
-                    gotoCluster(file, indexAux, fs);
-
+                    if(!isDirEmpty(file)){
+                        rm = false;
+                        break;
+                    }
+                    gotoCluster(file, index, fs);
+                    fseek(file, pos*sizeof(dirEntry), SEEK_CUR);
                 }
                 //remove entry from dir
                 int8 char29 = 29;
@@ -262,7 +262,6 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     {
         rm = false;
     }
-    gotoCluster(file, *clusterIndex, fs);
     return rm;
 }
 
