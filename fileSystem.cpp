@@ -92,14 +92,17 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     }
 }
 
-bool isDirEmpty(FILE *file){
+bool isDirEmpty(FILE *file)
+{
     int8 first;
     fread(&first, sizeof(int8), 1, file);
     fseek(file, (int)-sizeof(int8), SEEK_CUR);
     if (first == 28)
     {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 }
@@ -120,7 +123,9 @@ void DIR(FILE *file)
             {
                 break;
             }
+            if(Entry.name[0]!=29){
             cout << getFileName(&Entry) << "\n";
+            }
         }
     }
 }
@@ -196,14 +201,16 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
         while (1)
         {
             fread(&Entry, sizeof(dirEntry), 1, file);
-            char* entryName = getFileName(&Entry);
+            char *entryName = getFileName(&Entry);
             if (strcmp(entryName, name) == 0)
             {
                 //if dir, check if removable
-                if(strcmp(Entry.extension, "dir") == 0){
+                if (strcmp(Entry.extension, "dir") == 0)
+                {
                     int8 indexAux = index;
                     gotoDir(name, file, fs, &indexAux);
-                    if(!isDirEmpty(file)){
+                    if (!isDirEmpty(file))
+                    {
                         rm = false;
                         break;
                     }
@@ -213,12 +220,20 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
                 fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
                 fwrite(&char29, sizeof(int8), 1, file);
                 //remove from index
+                const int8 empty = 0;
+                int8 currentIndex = 0;
                 int cluster = Entry.startCluster + 4;
                 fseek(file, cluster, SEEK_SET);
-                while(cluster != 255){
-                    fread(&Entry, sizeof(int8), 1, file);
-                    cluster = (cluster+4);
-                    fseek(file, cluster, SEEK_SET);
+                while (currentIndex != 255)
+                {
+                    fread(&currentIndex, sizeof(int8), 1, file);
+                    cluster = (currentIndex + 4);
+                    fseek(file, -1, SEEK_CUR);
+                    fwrite(&empty, sizeof(int8), 1, file);
+                    if (currentIndex != 255)
+                    {
+                        fseek(file, cluster, SEEK_SET);
+                    }
                 }
                 break;
             }
@@ -237,7 +252,8 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     return rm;
 }
 
-bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterIndex){
+bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterIndex)
+{
     char *name = breakePath(path1);
     bool mv = true;
 
@@ -251,7 +267,7 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
         while (1)
         {
             fread(&Entry, sizeof(dirEntry), 1, file);
-            char* entryName = getFileName(&Entry);
+            char *entryName = getFileName(&Entry);
             if (strcmp(entryName, name) == 0)
             {
                 //remove entry from path1
@@ -273,16 +289,18 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
             int8 auxChar;
             int8 char28 = 28;
             fread(&auxChar, sizeof(int8), 1, file);
-            if(auxChar==29){
+            if (auxChar == 29)
+            {
                 fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
             }
-            if(auxChar==28){
+            if (auxChar == 28)
+            {
                 fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
                 fwrite(&char28, sizeof(int8), 1, file);
             }
-            fseek(file, sizeof(dirEntry)-sizeof(int8), SEEK_CUR);
+            fseek(file, sizeof(dirEntry) - sizeof(int8), SEEK_CUR);
         }
     }
     else
@@ -366,16 +384,14 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
                 strcpy(replaceEntry.extension, "dir");
                 oldExtension = new char;
                 strcpy(oldExtension, "dir");
-   
-
             }
-            else if(!newExtension || !oldExtension){
+            else if (!newExtension || !oldExtension)
+            {
                 return false;
             }
-            else if (strcmp(newExtension, "txt") == 0 &&strcmp(oldExtension, "txt") == 0 )
+            else if (strcmp(newExtension, "txt") == 0 && strcmp(oldExtension, "txt") == 0)
             {
                 strcpy(replaceEntry.extension, "txt");
-
             }
             else
             {
@@ -389,14 +405,15 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
         do
         {
             fread(&oldEntry, sizeof(dirEntry), 1, file);
-            if(strcmp(oldEntry.name, oldName) == 0 && strcmp(oldEntry.extension, oldExtension) == 0){
-                replaceEntry.startCluster=oldEntry.startCluster;
-                fseek(file,-14,SEEK_CUR);
+            if (strcmp(oldEntry.name, oldName) == 0 && strcmp(oldEntry.extension, oldExtension) == 0)
+            {
+                replaceEntry.startCluster = oldEntry.startCluster;
+                fseek(file, -14, SEEK_CUR);
                 fwrite(&replaceEntry, sizeof(dirEntry), 1, file);
                 return true;
                 break;
             }
-        } while (oldEntry.name[0]!=28);
+        } while (oldEntry.name[0] != 28);
         return false;
     }
     else

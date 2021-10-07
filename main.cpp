@@ -90,7 +90,19 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                RM(convertedPath, file, fs, &curDir);
+                if (validPath(convertedPath))
+                {
+                    if (!RM(convertedPath, file, fs, &curDir))
+                    {
+                        cout << "Arquivo nao encontrado/pasta nao vazia\n";
+                    }
+                }
+                else
+                {
+                    cout << "Caminho mal formatado\n";
+                }
+                gotoCluster(file, curDir, fs);
+
                 //cout << "Comando nao reconhecido";
             }
             else if (command.compare("RENAME") == 0 || command.compare("rename") == 0)
@@ -122,7 +134,8 @@ int main()
                     cout << "caminho mal formatado\n";
                 }
             }
-            cin.clear();
+            else if (command.compare("MOVE") == 0 || command.compare("move") == 0)
+                cin.clear();
             fflush(stdin);
         }
 
