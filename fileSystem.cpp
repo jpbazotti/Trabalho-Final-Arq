@@ -272,7 +272,7 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
             }
             if(auxChar==28){
-                fseek(file, -sizeof(int8), SEEK_CUR);
+                fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
                 fwrite(&char28, sizeof(int8), 1, file);
             }
