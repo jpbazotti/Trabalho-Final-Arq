@@ -108,8 +108,9 @@ int main()
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
-                cout << convertedPath << "a";
-                rename(convertedPath, file, convertedPath2, fs, &curDir);
+                if(!rename(convertedPath, file, convertedPath2, fs, &curDir)){
+                    cout << "Erro nos argumentos/ arquivo nao encontrado";
+                }
                 CD(convertedCurrentPath, file, fs, &curDir);
                 gotoCluster(file, curDir, fs);
             }

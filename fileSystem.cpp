@@ -95,7 +95,7 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 bool isDirEmpty(FILE *file){
     int8 first;
     fread(&first, sizeof(int8), 1, file);
-    fseek(file, -sizeof(int8), SEEK_CUR);
+    fseek(file, (int)-sizeof(int8), SEEK_CUR);
     if (first == 28)
     {
         return true;
@@ -179,7 +179,6 @@ char *breakePath(char *path)
     }
     name = &(path[j + 1]);
     path[j] = '\0';
-    cout << name;
     return name;
 }
 
@@ -211,7 +210,7 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
                 }
                 //remove entry from dir
                 int8 char29 = 29;
-                fseek(file, -sizeof(dirEntry), SEEK_CUR);
+                fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
                 fwrite(&char29, sizeof(int8), 1, file);
                 //remove from index
 
@@ -251,7 +250,7 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
             {
                 //remove entry from path1
                 int8 char29 = 29;
-                fseek(file, -sizeof(dirEntry), SEEK_CUR);
+                fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
                 fwrite(&char29, sizeof(int8), 1, file);
                 break;
             }
@@ -268,11 +267,11 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
             int8 auxChar;
             fread(&auxChar, sizeof(int8), 1, file);
             if(auxChar==29){
-                fseek(file, -sizeof(int8), SEEK_CUR);
+                fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
             }
             if(auxChar==28){
-                fseek(file, -sizeof(int8), SEEK_CUR);
+                fseek(file, (int)-sizeof(int8), SEEK_CUR);
                 //case 28
             }
             fseek(file, sizeof(dirEntry)-sizeof(int8), SEEK_CUR);
@@ -343,10 +342,8 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
     char *newName;
     char *newExtension;
     int8 index = *clusterIndex;
-    cout <<"0";
     if (CD(path, file, fs, &index))
     {
-        cout <<"0.1";
         gotoCluster(file, index, fs);
         dirEntry replaceEntry;
         dirEntry oldEntry;
@@ -354,37 +351,32 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
         oldExtension = strtok(NULL, ".");
         newName = strtok(newFileName, ".");
         newExtension = strtok(NULL, ".");
-        cout <<"1";
         if (strlen(newName) < 9)
         {
-            cout <<"2";
             strcpy(replaceEntry.name, newName);
             if (!newExtension && !oldExtension)
             {
-                cout <<"3";
                 strcpy(replaceEntry.extension, "dir");
-                oldExtension="dir";
-                cout << replaceEntry.extension <<"\n";
-                cout << oldExtension;
+                oldExtension = new char;
+                strcpy(oldExtension, "dir");
+   
 
+            }
+            else if(!newExtension || !oldExtension){
+                return false;
             }
             else if (strcmp(newExtension, "txt") == 0 &&strcmp(oldExtension, "txt") == 0 )
             {
-                cout <<"4";
                 strcpy(replaceEntry.extension, "txt");
-                cout << replaceEntry.extension <<"\n";
-                cout << oldExtension;
 
             }
             else
             {
-                gotoCluster(file, *clusterIndex, fs);
                 return false;
             }
         }
         else
         {
-            gotoCluster(file, *clusterIndex, fs);
             return false;
         }
         do
@@ -398,7 +390,6 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
                 break;
             }
         } while (oldEntry.name[0]!=28);
-        gotoCluster(file, *clusterIndex, fs);
         return false;
     }
     else
