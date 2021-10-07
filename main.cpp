@@ -76,7 +76,7 @@ int main()
                 extension = inputPath.substr(start, end - start);
                 if (name.length() > 9 || extension.length() > 3 || inputPath.find("/") != std::string::npos || extension.compare("txt") != 0 || inputPath.find(" ") != std::string::npos)
                 {
-                    cout << "Nome de arquivo invalido";
+                    cout << "Nome de arquivo invalido\n";
                 }
                 else
                 {
@@ -108,11 +108,22 @@ int main()
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
-                cout << convertedPath << "a";
-                rename(convertedPath, file, convertedPath2, fs, &curDir);
-                CD(convertedCurrentPath, file, fs, &curDir);
-                gotoCluster(file, curDir, fs);
+                if (validPath(convertedPath))
+                {
+                    if (!rename(convertedPath, file, convertedPath2, fs, &curDir))
+                    {
+                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                    }
+                    CD(convertedCurrentPath, file, fs, &curDir);
+                    gotoCluster(file, curDir, fs);
+                }
+                else
+                {
+                    cout << "caminho mal formatado\n";
+                }
             }
+            cin.clear();
+            fflush(stdin);
         }
 
         return 0;
