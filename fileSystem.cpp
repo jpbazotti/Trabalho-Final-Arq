@@ -214,7 +214,13 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
                 fseek(file, -sizeof(dirEntry), SEEK_CUR);
                 fwrite(&char29, sizeof(int8), 1, file);
                 //remove from index
-
+                int cluster = Entry.startCluster + 4;
+                fseek(file, cluster, SEEK_SET);
+                while(cluster != 255){
+                    fread(&Entry, sizeof(int8), 1, file);
+                    cluster = (cluster+4);
+                    fseek(file, cluster, SEEK_SET);
+                }
                 break;
             }
             if (Entry.name[0] == 28)
