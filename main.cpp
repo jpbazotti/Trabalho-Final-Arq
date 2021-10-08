@@ -41,6 +41,8 @@ int main()
                 if (CD(convertedPath, file, fs, &curDir))
                 {
                     Path = inputPath;
+                }else{
+                    cout<< "Arquivo nao encontrado";
                 }
                 gotoCluster(file, curDir, fs);
             }

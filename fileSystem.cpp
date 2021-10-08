@@ -198,37 +198,43 @@ char *breakePath(char *path)
 
 bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
+    char *pathBackup = new char;
+    strcpy(pathBackup,path);
+    cout << path;
+    int8 index = *clusterIndex;
+    int8 indexAux = *clusterIndex;
+    //if dir, check if removable
+    
+    if (CD(pathBackup, file, fs, &indexAux))
+    {
+        cout << "dir";
+        gotoCluster(file, indexAux, fs);
+        if (!isDirEmpty(file))
+        {
+            cout <<"full";
+            return false;
+        }
+    }else {
+        cout << "file";
+    }
     char *name = breakePath(path);
     bool rm = true;
-
-    int8 index = *clusterIndex;
+    gotoCluster(file, index, fs);
+    cout << name;
+    cout << path;
     if (CD(path, file, fs, &index))
     {
+            cout << "my god part 2";
         gotoCluster(file, index, fs);
         //find name in dir
         dirEntry Entry;
-        int pos = 0;
         while (1)
         {
             fread(&Entry, sizeof(dirEntry), 1, file);
             char *entryName = getFileName(&Entry);
-            pos++;
             if (strcmp(entryName, name) == 0)
             {
-                //if dir, check if removable
-                if (strcmp(Entry.extension, "dir") == 0)
-                {
-                    if(!gotoDir(name, file, fs, clusterIndex)){
-                        rm = false;
-                        break;
-                    }
-                    if(!isDirEmpty(file)){
-                        rm = false;
-                        break;
-                    }
-                    gotoCluster(file, index, fs);
-                    fseek(file, pos*sizeof(dirEntry), SEEK_CUR);
-                }
+               
                 //remove entry from dir
                 int8 char29 = 29;
                 fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
@@ -262,6 +268,7 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     {
         rm = false;
     }
+    gotoCluster(file, *clusterIndex, fs);
     return rm;
 }
 
