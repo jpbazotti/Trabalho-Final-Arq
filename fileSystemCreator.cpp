@@ -10,11 +10,11 @@ void createFile(FileSystem fs, char *filename)
     if ((file = fopen(filename, "wb")))
     {
         fwrite(&fs, sizeof(FileSystem), 1, file);
-        for (int i = 0; i < pow(2, 8); i++)
+        for (int i = 0; i < pow(2, fs.indexSize); i++)
         {
             fwrite(&empty, sizeof(int8), 1, file);
         }
-        for (int i = 0; i < pow(2, 23); i++)
+        for (int i = 0; i < pow(2, (fs.indexSize + fs.clusterSize)); i++)
         {
             fwrite(&empty, sizeof(int8), 1, file);
         }

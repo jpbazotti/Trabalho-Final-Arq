@@ -41,14 +41,16 @@ int main()
                 if (CD(convertedPath, file, fs, &curDir))
                 {
                     Path = inputPath;
-                }else{
-                    cout<< "Arquivo nao encontrado";
+                }
+                else
+                {
+                    cout << "Arquivo nao encontrado";
                 }
                 gotoCluster(file, curDir, fs);
             }
             else if (command.compare("DIR") == 0 || command.compare("dir") == 0)
             {
-                DIR(file,&curDir,fs);
+                DIR(file, &curDir, fs);
                 gotoCluster(file, curDir, fs);
             }
             else if (command.compare("MKDIR") == 0 || command.compare("mkdir") == 0)
@@ -137,7 +139,38 @@ int main()
                 }
             }
             else if (command.compare("MOVE") == 0 || command.compare("move") == 0)
-                cin.clear();
+            {
+            }
+            else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
+            {
+                cin >> inputPath;
+                cin >> inputPath2;
+                convertedPath = new char[inputPath.size() + 1];
+                copy(inputPath.begin(), inputPath.end(), convertedPath);
+                convertedPath[inputPath.size()] = '\0';
+
+                convertedPath2 = new char[inputPath2.size() + 1];
+                copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
+                convertedPath2[inputPath2.size()] = '\0';
+
+                convertedCurrentPath = new char[Path.size() + 1];
+                copy(Path.begin(), Path.end(), convertedCurrentPath);
+                convertedCurrentPath[Path.size()] = '\0';
+                if (validPath(convertedPath))
+                {
+                    if (!edit(convertedPath,file ,convertedPath2, fs, &curDir))
+                    {
+                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                    }
+                    CD(convertedCurrentPath, file, fs, &curDir);
+                    gotoCluster(file, curDir, fs);
+                }
+                else
+                {
+                    cout << "caminho mal formatado\n";
+                }
+            }
+            cin.clear();
             fflush(stdin);
         }
 

@@ -55,4 +55,7 @@ void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs);
 //renomea um arquivo 
 bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clusterIndex);
 
+//edita conteudo do arquivo
+bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterIndex);
+
 #endif

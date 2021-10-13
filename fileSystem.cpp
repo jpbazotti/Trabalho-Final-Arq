@@ -100,22 +100,22 @@ bool isDirEmpty(FILE *file)
         fread(&first, sizeof(int8), 1, file);
         if (first == 29)
         {
-
         }
         else if (first == 28)
         {
             return true;
             break;
         }
-        else{
+        else
+        {
             return false;
             break;
         }
-        fseek(file, sizeof(dirEntry)-1, SEEK_CUR);
+        fseek(file, sizeof(dirEntry) - 1, SEEK_CUR);
     }
 }
 
-void DIR(FILE *file,int8 *clusterIndex, FileSystem fs)
+void DIR(FILE *file, int8 *clusterIndex, FileSystem fs)
 {
     if (isDirEmpty(file))
     {
@@ -123,7 +123,7 @@ void DIR(FILE *file,int8 *clusterIndex, FileSystem fs)
     }
     else
     {
-        gotoCluster(file,*clusterIndex,fs);
+        gotoCluster(file, *clusterIndex, fs);
         dirEntry Entry;
         while (1)
         {
@@ -132,8 +132,9 @@ void DIR(FILE *file,int8 *clusterIndex, FileSystem fs)
             {
                 break;
             }
-            if(Entry.name[0]!=29){
-            cout << getFileName(&Entry) << "\n";
+            if (Entry.name[0] != 29)
+            {
+                cout << getFileName(&Entry) << "\n";
             }
         }
     }
@@ -199,22 +200,24 @@ char *breakePath(char *path)
 bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
     char *pathBackup = new char;
-    strcpy(pathBackup,path);
+    strcpy(pathBackup, path);
     cout << path;
     int8 index = *clusterIndex;
     int8 indexAux = *clusterIndex;
     //if dir, check if removable
-    
+
     if (CD(pathBackup, file, fs, &indexAux))
     {
         cout << "dir";
         gotoCluster(file, indexAux, fs);
         if (!isDirEmpty(file))
         {
-            cout <<"full";
+            cout << "full";
             return false;
         }
-    }else {
+    }
+    else
+    {
         cout << "file";
     }
     char *name = breakePath(path);
@@ -224,7 +227,7 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     cout << path;
     if (CD(path, file, fs, &index))
     {
-            cout << "my god part 2";
+        cout << "my god part 2";
         gotoCluster(file, index, fs);
         //find name in dir
         dirEntry Entry;
@@ -234,7 +237,7 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
             char *entryName = getFileName(&Entry);
             if (strcmp(entryName, name) == 0)
             {
-               
+
                 //remove entry from dir
                 int8 char29 = 29;
                 fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
@@ -396,6 +399,7 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
         oldExtension = strtok(NULL, ".");
         newName = strtok(newFileName, ".");
         newExtension = strtok(NULL, ".");
+        //checa se extensao anterior eh igual a nova
         if (strlen(newName) < 9)
         {
             strcpy(replaceEntry.name, newName);
@@ -424,6 +428,7 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
         }
         do
         {
+            //achar a entrada para substituir e substitui
             fread(&oldEntry, sizeof(dirEntry), 1, file);
             if (strcmp(oldEntry.name, oldName) == 0 && strcmp(oldEntry.extension, oldExtension) == 0)
             {
@@ -442,4 +447,87 @@ bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clus
         return false;
     }
     return true;
+}
+bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterIndex)
+{
+    char *name = breakePath(path);
+    int8 index = *clusterIndex;
+    dirEntry entry;
+    dirEntry current;
+    if (CD(path, file, fs, &index))
+    {
+        //vai para pasta do arquivo
+        gotoCluster(file, index, fs);
+        strcpy(entry.name, strtok(name,"."));
+        strcpy(entry.extension, "txt");
+        entry.startCluster = 0;
+        do
+        {
+            //checa se arquivo esta na pasta
+            fread(&current, sizeof(dirEntry), 1, file);
+            if (strcmp(entry.name, current.name) == 0 && strcmp(entry.extension, current.extension) == 0)
+            {
+                entry.startCluster = current.startCluster;
+                break;
+            }
+        } while (current.name[0] != 28);
+        if (entry.startCluster == 0)
+        {   
+            
+            //nao achou arquivo na pasta
+            return false;
+        }
+        else
+        {
+            //reseta indexamento
+            int cluster = 4 + entry.startCluster;
+            const int8 empty = 0;
+            int8 currentIndex = 0;
+            fseek(file, cluster, SEEK_SET);
+            while (currentIndex != 255)
+            {
+                fread(&currentIndex, sizeof(int8), 1, file);
+                cluster = (currentIndex + 4);
+                fseek(file, -1, SEEK_CUR);
+                if (currentIndex != 255)
+                {
+                    fwrite(&empty, sizeof(int8), 1, file);
+                    fseek(file, cluster, SEEK_SET);
+                }
+            }
+            //vai para cluster do arquivo
+            int bytesWritten=0;
+            gotoCluster(file,entry.startCluster,fs);
+            currentIndex=entry.startCluster;
+            //checa se string comeca e termina com parenteses
+            if (content[0]=='"' && content[strlen(content)-1]=='"')
+            {
+                int8 eof = 28;
+                int i=1;
+                while (content[i]!='"')
+                {
+                    
+                    fwrite(&content[i],1,1,file);
+                    bytesWritten++;
+                    if(bytesWritten==pow(2,fs.clusterSize)){
+                        currentIndex=findNewCluster(file,fs.indexSize,fs.clusterSize,currentIndex);
+                        gotoCluster(file,currentIndex,fs);
+                        bytesWritten=0;
+                    }
+                    i++;
+                }
+                fwrite(&eof,1,1,file);
+                return true;
+            }else{
+                return false;
+            }
+            
+        }
+    }
+    else
+    {
+        //nao conseguiu entrar na pasta do arquivo
+        gotoCluster(file, *clusterIndex, fs);
+        return false;
+    }
 }
