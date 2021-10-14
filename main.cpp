@@ -47,7 +47,7 @@ int main()
                 }
                 else
                 {
-                    cout << "Arquivo nao encontrado";
+                    cout << "Erro: arquivo nao encontrado";
                 }
                 gotoCluster(file, curDir, fs);
             }
@@ -59,13 +59,15 @@ int main()
             else if (command.compare("MKDIR") == 0 || command.compare("mkdir") == 0)
             {
                 cin >> inputPath;
-                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos || inputPath.find(" ") != std::string::npos)
+                if (inputPath.length() > 9 || inputPath.find(".") != std::string::npos || inputPath.find("/") != std::string::npos || inputPath.find(" ") != std::string::npos || inputPath.find("<") != std::string::npos || inputPath.find(">") != std::string::npos)
                 {
-                    cout << "Nome de diretorio invalido\n";
+                    cout << "Erro: nome de diretorio invalido\n";
                 }
                 else
                 {
-                    createDir(file, curDir, inputPath.c_str(), fs);
+                    if(!createDir(file, curDir, inputPath.c_str(), fs)){
+                        cout << "Erro: sem espaco\n";
+                    }
                     gotoCluster(file, curDir, fs);
                 }
             }
@@ -81,13 +83,15 @@ int main()
                 start = end + splitter.length();
                 end = inputPath.find(splitter, start);
                 extension = inputPath.substr(start, end - start);
-                if (name.length() > 9 || extension.length() > 3 || inputPath.find("/") != std::string::npos || extension.compare("txt") != 0 || inputPath.find(" ") != std::string::npos)
+                if (name.length() > 9 || extension.length() > 3 || inputPath.find("/") != std::string::npos || extension.compare("txt") != 0 || inputPath.find(" ") != std::string::npos || inputPath.find("<") != std::string::npos || inputPath.find(">") != std::string::npos)
                 {
                     cout << "Nome de arquivo invalido\n";
                 }
                 else
                 {
-                    createFile(file, curDir, name.c_str(), fs);
+                    if(!createFile(file, curDir, name.c_str(), fs)){
+                        cout << "Erro: sem espaco\n";
+                    }
                     gotoCluster(file, curDir, fs);
                 }
             }
@@ -106,17 +110,17 @@ int main()
                         if(Path.find(convertedPath) != std::string::npos){
                             Path = "/root";
                             curDir = fs.rootStart;
-                            cout << "Enviado para o root\n";
+                            cout << "Aviso: enviado para o root\n";
                         }
                     }
                     else
                     {
-                        cout << "Arquivo nao encontrado/pasta nao vazia\n";
+                        cout << "Erro: arquivo nao encontrado/pasta nao vazia\n";
                     }
                 }
                 else
                 {
-                    cout << "Caminho mal formatado\n";
+                    cout << "Erro: caminho mal formatado\n";
                 }
                 gotoCluster(file, curDir, fs);
 
@@ -149,14 +153,14 @@ int main()
                 {
                     if (!rename(convertedPath, file, convertedPath2, fs, &curDir))
                     {
-                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                        cout << "Erro: erro nos argumentos / arquivo nao encontrado\n";
                     }
                     CD(convertedCurrentPath, file, fs, &curDir);
                     gotoCluster(file, curDir, fs);
                 }
                 else
                 {
-                    cout << "Caminho mal formatado\n";
+                    cout << "Erro: caminho mal formatado\n";
                 }
             }
             else if (command.compare("MOVE") == 0 || command.compare("move") == 0)
@@ -187,14 +191,14 @@ int main()
                 {
                     if (!MOVE(convertedPath,convertedPath2,file , fs, &curDir))
                     {
-                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                        cout << "Erro: erro nos argumentos / arquivo nao encontrado\n";
                     }
                     CD(convertedCurrentPath, file, fs, &curDir);
                     gotoCluster(file, curDir, fs);
                 }
                 else
                 {
-                    cout << "Caminho mal formatado\n";
+                    cout << "Erro: caminho mal formatado\n";
                 }
             }
             else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
@@ -225,23 +229,22 @@ int main()
                 {
                     if (!edit(convertedPath,file ,convertedPath2, fs, &curDir))
                     {
-                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                        cout << "Erro: erro nos argumentos / arquivo nao encontrado\n";
                     }
                     CD(convertedCurrentPath, file, fs, &curDir);
                     gotoCluster(file, curDir, fs);
                 }
                 else
                 {
-                    cout << "Caminho mal formatado\n";
+                    cout << "Erro: caminho mal formatado\n";
                 }
             }
             else{
-                cout << "Comando nao existente\n";
+                cout << "Erro: comando nao existente\n";
             }
             cin.clear();
             fflush(stdin);
         }
-
         return 0;
     }
 }

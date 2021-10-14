@@ -340,6 +340,7 @@ bool createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
         //escreve novo final de arquivo se o espaco disponivel estava no final do arquivo
         fwrite(&eof, sizeof(int8), 1, file);
     }
+    return true;
 }
 
 bool createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
@@ -368,6 +369,7 @@ bool createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
         //escreve novo final de arquivo se o espaco disponivel estava no final do arquivo
         fwrite(&eof, sizeof(int8), 1, file);
     }
+    return true;
 }
 
 bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clusterIndex)
