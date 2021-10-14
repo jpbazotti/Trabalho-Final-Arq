@@ -37,7 +37,7 @@ void DIR(FILE *file,int8 *clusterIndex, FileSystem fs);
 //Valida o path
 bool validPath(char *path);
 
-//Quebra a string para encontrar o nome do arquivo
+//Quebra a string e retorna o nome do arquivo de um path
 char *breakePath(char *path);
 
 //faz o comando RM
@@ -47,10 +47,10 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex);
 bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterIndex);
 
 //cria novo diretorio em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs);
+bool createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs);
 
 //cria novo arquivo em um diretorio, no diretorio procura por um espaco vazio ou o final do diretorio se nao ha um disponivel
-void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs);
+bool createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs);
 
 //renomea um arquivo 
 bool rename(char *path, FILE *file, char *newFileName, FileSystem fs, int8 *clusterIndex);

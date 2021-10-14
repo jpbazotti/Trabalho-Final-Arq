@@ -5,7 +5,6 @@
 char *getFileName(dirEntry *Entry)
 {
     //pastas sao arquivos, porem a sua extensao nao aparece
-
     if (strcmp(Entry->extension, "dir") == 0)
     {
         return Entry->name;
@@ -46,8 +45,6 @@ bool gotoDir(char *name, FILE *file, FileSystem fs, int8 *clusterIndex)
             if (strcmp(Entry.extension, "dir") == 0)
             {
                 *clusterIndex = Entry.startCluster;
-                //fseek is now on CD function
-                //fseek(dir, offSetCalc(fs.indexSize, fs.clusterSize, *clusterIndex), SEEK_SET);
                 return true;
             }
         }
@@ -56,13 +53,11 @@ bool gotoDir(char *name, FILE *file, FileSystem fs, int8 *clusterIndex)
 
 bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
-    //Verifica se o path contem "root"
+    //remove o "/root" do path
     char *name;
     name = strtok(path, "/");
     if (strcmp(name, "root") != 0)
     {
-        //cout removido, usar retorno da funcao no lugar
-        //cout << "Arquivo ou pasta nao encontrado.\n";
         return false;
     }
     //reseta o ponteiro para o diretorio root (necessario para o funcionamento da funcao)
@@ -81,14 +76,9 @@ bool CD(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
         }
         if (!gotoDir(name, file, fs, &index))
         {
-            //cout removido, usar retorno da funcao no lugar
-            //cout << "Arquivo ou pasta nao encontrado.\n";
             return false;
             break;
         }
-        //fseek movido para função separada
-        //offset = offSetCalc(fs.indexSize, fs.clusterSize, index);
-        //fseek(dir, offset, SEEK_SET);
     }
 }
 
@@ -203,8 +193,8 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
     strcpy(pathBackup, path);
     int8 index = *clusterIndex;
     int8 indexAux = *clusterIndex;
-    //if dir, check if removable
 
+    //if dir, check if removable
     if (CD(pathBackup, file, fs, &indexAux))
     {
         gotoCluster(file, indexAux, fs);
@@ -213,6 +203,7 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
             return false;
         }
     }
+
     char *name = breakePath(path);
     bool rm = true;
     gotoCluster(file, index, fs);
@@ -227,7 +218,6 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
             char *entryName = getFileName(&Entry);
             if (strcmp(entryName, name) == 0)
             {
-
                 //remove entry from dir
                 int8 char29 = 29;
                 fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
@@ -297,23 +287,24 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
         }
         //create new entry in path2
         gotoCluster(file, index2, fs);
+        int8 char28 = 28;
+        dirEntry EntryAux;
         while (1)
         {
-            int8 auxChar;
-            int8 char28 = 28;
-            fread(&auxChar, sizeof(int8), 1, file);
-            if (auxChar == 29)
+            fread(&EntryAux, sizeof(dirEntry), 1, file);
+            if (EntryAux.name[0] == 29)
             {
-                fseek(file, (int)-sizeof(int8), SEEK_CUR);
+                fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
+                break;
             }
-            if (auxChar == 28)
+            if (EntryAux.name[0] == 28)
             {
-                fseek(file, (int)-sizeof(int8), SEEK_CUR);
+                fseek(file, (int)-sizeof(dirEntry), SEEK_CUR);
                 fwrite(&Entry, sizeof(dirEntry), 1, file);
                 fwrite(&char28, sizeof(int8), 1, file);
+                break;
             }
-            fseek(file, sizeof(dirEntry) - sizeof(int8), SEEK_CUR);
         }
     }
     else
@@ -323,7 +314,7 @@ bool MOVE(char *path1, char *path2, FILE *file, FileSystem fs, int8 *clusterInde
     return mv;
 }
 
-void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
+bool createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
 {
     int8 eof = 28;
     int dirOffset = offSetCalc(fs.indexSize, fs.clusterSize, curDir);
@@ -331,6 +322,9 @@ void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
     strcpy(newEntry.name, dirName);
     strcpy(newEntry.extension, "dir");
     newEntry.startCluster = findAvailableCluster(file, fs.indexSize, fs.clusterSize);
+    if(newEntry.startCluster == -1){
+        return false;
+    }
     fseek(file, dirOffset, SEEK_SET);
     int8 current;
     do
@@ -348,7 +342,7 @@ void createDir(FILE *file, int8 curDir, const char dirName[9], FileSystem fs)
     }
 }
 
-void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
+bool createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
 {
     int8 eof = 28;
     int dirOffset = offSetCalc(fs.indexSize, fs.clusterSize, curDir);
@@ -356,6 +350,9 @@ void createFile(FILE *file, int8 curDir, const char fileName[9], FileSystem fs)
     strcpy(newEntry.name, fileName);
     strcpy(newEntry.extension, "txt");
     newEntry.startCluster = findAvailableCluster(file, fs.indexSize, fs.clusterSize);
+    if(newEntry.startCluster == -1){
+        return false;
+    }
     fseek(file, dirOffset, SEEK_SET);
     int8 current;
     do
@@ -501,6 +498,9 @@ bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterInd
                     bytesWritten++;
                     if(bytesWritten==pow(2,fs.clusterSize)){
                         currentIndex=findNewCluster(file,fs.indexSize,fs.clusterSize,currentIndex);
+                        if(currentIndex == -1){
+                            return false;
+                        }
                         gotoCluster(file,currentIndex,fs);
                         bytesWritten=0;
                     }

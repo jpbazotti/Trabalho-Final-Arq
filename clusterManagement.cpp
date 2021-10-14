@@ -5,7 +5,7 @@ int offSetCalc(int8 indexSize, int8 clusterSize, int8 curDir)
     return (4 + pow(2, indexSize) + curDir * pow(2, clusterSize));
 }
 
-int8 findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
+int findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
 {
     fseek(file, 4, SEEK_SET);
     int8 current;
@@ -26,7 +26,7 @@ int8 findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
     }
     return -1;
 }
-int8 findNewCluster(FILE *file, int8 indexSize, int8 clusterSize,int8 currentIndex)
+int findNewCluster(FILE *file, int8 indexSize, int8 clusterSize,int8 currentIndex)
 {
     fseek(file, 4, SEEK_SET);
     int8 current;
