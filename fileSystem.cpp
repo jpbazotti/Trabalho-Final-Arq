@@ -201,33 +201,23 @@ bool RM(char *path, FILE *file, FileSystem fs, int8 *clusterIndex)
 {
     char *pathBackup = new char;
     strcpy(pathBackup, path);
-    cout << path;
     int8 index = *clusterIndex;
     int8 indexAux = *clusterIndex;
     //if dir, check if removable
 
     if (CD(pathBackup, file, fs, &indexAux))
     {
-        cout << "dir";
         gotoCluster(file, indexAux, fs);
         if (!isDirEmpty(file))
         {
-            cout << "full";
             return false;
         }
-    }
-    else
-    {
-        cout << "file";
     }
     char *name = breakePath(path);
     bool rm = true;
     gotoCluster(file, index, fs);
-    cout << name;
-    cout << path;
     if (CD(path, file, fs, &index))
     {
-        cout << "my god part 2";
         gotoCluster(file, index, fs);
         //find name in dir
         dirEntry Entry;

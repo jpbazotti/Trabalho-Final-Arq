@@ -38,6 +38,9 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
+                if(convertedPath[inputPath.size()-1] == '/'){
+                    convertedPath[inputPath.size()-1] = '\0';
+                }
                 if (CD(convertedPath, file, fs, &curDir))
                 {
                     Path = inputPath;
@@ -94,9 +97,19 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
+                if(convertedPath[inputPath.size()-1] == '/'){
+                    convertedPath[inputPath.size()-1] = '\0';
+                }
                 if (validPath(convertedPath))
                 {
-                    if (!RM(convertedPath, file, fs, &curDir))
+                    if(RM(convertedPath, file, fs, &curDir)){
+                        if(Path.find(convertedPath) != std::string::npos){
+                            Path = "/root";
+                            curDir = fs.rootStart;
+                            cout << "Enviado para o root\n";
+                        }
+                    }
+                    else
                     {
                         cout << "Arquivo nao encontrado/pasta nao vazia\n";
                     }
@@ -116,14 +129,23 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
+                if(convertedPath[inputPath.size()-1] == '/'){
+                    convertedPath[inputPath.size()-1] = '\0';
+                }
 
                 convertedPath2 = new char[inputPath2.size() + 1];
                 copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
                 convertedPath2[inputPath2.size()] = '\0';
+                if(convertedPath2[inputPath2.size()-1] == '/'){
+                    convertedPath2[inputPath2.size()-1] = '\0';
+                }
 
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
+                if(convertedCurrentPath[Path.size()-1] == '/'){
+                    convertedCurrentPath[Path.size()-1] = '\0';
+                }
                 if (validPath(convertedPath))
                 {
                     if (!rename(convertedPath, file, convertedPath2, fs, &curDir))
@@ -148,14 +170,23 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
+                if(convertedPath[inputPath.size()-1] == '/'){
+                    convertedPath[inputPath.size()-1] = '\0';
+                }
 
                 convertedPath2 = new char[inputPath2.size() + 1];
                 copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
                 convertedPath2[inputPath2.size()] = '\0';
+                if(convertedPath2[inputPath2.size()-1] == '/'){
+                    convertedPath2[inputPath2.size()-1] = '\0';
+                }
 
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
+                if(convertedCurrentPath[Path.size()-1] == '/'){
+                    convertedCurrentPath[Path.size()-1] = '\0';
+                }
                 if (validPath(convertedPath))
                 {
                     if (!edit(convertedPath,file ,convertedPath2, fs, &curDir))
