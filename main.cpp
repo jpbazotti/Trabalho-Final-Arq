@@ -157,11 +157,12 @@ int main()
                 }
                 else
                 {
-                    cout << "caminho mal formatado\n";
+                    cout << "Caminho mal formatado\n";
                 }
             }
             else if (command.compare("MOVE") == 0 || command.compare("move") == 0)
             {
+                
             }
             else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
             {
@@ -198,8 +199,11 @@ int main()
                 }
                 else
                 {
-                    cout << "caminho mal formatado\n";
+                    cout << "Caminho mal formatado\n";
                 }
+            }
+            else{
+                cout << "Comando nao existente\n";
             }
             cin.clear();
             fflush(stdin);
