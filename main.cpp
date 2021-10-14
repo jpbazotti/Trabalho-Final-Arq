@@ -120,7 +120,6 @@ int main()
                 }
                 gotoCluster(file, curDir, fs);
 
-                //cout << "Comando nao reconhecido";
             }
             else if (command.compare("RENAME") == 0 || command.compare("rename") == 0)
             {
@@ -162,7 +161,41 @@ int main()
             }
             else if (command.compare("MOVE") == 0 || command.compare("move") == 0)
             {
-                
+                cin >> inputPath;
+                cin >> inputPath2;
+                convertedPath = new char[inputPath.size() + 1];
+                copy(inputPath.begin(), inputPath.end(), convertedPath);
+                convertedPath[inputPath.size()] = '\0';
+                if(convertedPath[inputPath.size()-1] == '/'){
+                    convertedPath[inputPath.size()-1] = '\0';
+                }
+
+                convertedPath2 = new char[inputPath2.size() + 1];
+                copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
+                convertedPath2[inputPath2.size()] = '\0';
+                if(convertedPath2[inputPath2.size()-1] == '/'){
+                    convertedPath2[inputPath2.size()-1] = '\0';
+                }
+
+                convertedCurrentPath = new char[Path.size() + 1];
+                copy(Path.begin(), Path.end(), convertedCurrentPath);
+                convertedCurrentPath[Path.size()] = '\0';
+                if(convertedCurrentPath[Path.size()-1] == '/'){
+                    convertedCurrentPath[Path.size()-1] = '\0';
+                }
+                if (validPath(convertedPath) && validPath(convertedPath2))
+                {
+                    if (!MOVE(convertedPath,convertedPath2,file , fs, &curDir))
+                    {
+                        cout << "Erro nos argumentos / arquivo nao encontrado\n";
+                    }
+                    CD(convertedCurrentPath, file, fs, &curDir);
+                    gotoCluster(file, curDir, fs);
+                }
+                else
+                {
+                    cout << "Caminho mal formatado\n";
+                }
             }
             else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
             {
