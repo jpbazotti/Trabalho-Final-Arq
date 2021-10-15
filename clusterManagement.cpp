@@ -11,7 +11,7 @@ int findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
     int8 current;
     int8 full = 255;
     int8 eof = 28;
-    for (int8 i = 0; i < pow(2, indexSize); i++)
+    for (int i = 0; i < pow(2, indexSize); i++)
     {
         fread(&current, sizeof(int8), 1, file);
         if (current == 0)
@@ -26,12 +26,12 @@ int findAvailableCluster(FILE *file, int8 indexSize, int8 clusterSize)
     }
     return -1;
 }
-int findNewCluster(FILE *file, int8 indexSize, int8 clusterSize,int8 currentIndex)
+int findNewCluster(FILE *file, int8 indexSize,int8 currentIndex)
 {
     fseek(file, 4, SEEK_SET);
     int8 current;
     int8 full = 255;
-    for (int8 i = 0; i < pow(2, indexSize); i++)
+    for (int i = 0; i < pow(2, indexSize); i++)
     {
         fread(&current, sizeof(int8), 1, file);
         if (current == 0)
@@ -44,4 +44,32 @@ int findNewCluster(FILE *file, int8 indexSize, int8 clusterSize,int8 currentInde
         }
     }
     return -1;
+}
+int availableClusters(FILE *file, int8 indexSize){
+    fseek(file, 4, SEEK_SET);
+    int8 current;
+    int emptyClusters=0;
+    for (int i = 0; i < pow(2, indexSize); i++)
+    {
+        fread(&current, sizeof(int8), 1, file);
+        if (current == 0)
+        {
+            emptyClusters++;
+        }
+    }
+    return emptyClusters;
+}
+
+int clusterInFile(FILE *file, int8 startCluster){
+        int currentIndex=(4+startCluster);
+        int fileClusters=0;
+        int8 current;
+        do{
+            fseek(file, currentIndex, SEEK_SET);
+            fread(&current,1,1,file);
+            fileClusters++;
+            currentIndex =4+current;
+        }while(current!=255);
+        return fileClusters;
+
 }

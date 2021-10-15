@@ -1,6 +1,7 @@
 #include <string.h>
 #include "fileSystem.h"
 #include "fileSystemCreator.h"
+#include "clusterManagement.h"
 
 char *getFileName(dirEntry *Entry)
 {
@@ -471,19 +472,29 @@ bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterInd
             //reseta indexamento
             int cluster = 4 + entry.startCluster;
             const int8 empty = 0;
+            const int8 full=255; 
             int8 currentIndex = 0;
+            fseek(file, cluster, SEEK_SET);
+            fread(&currentIndex, sizeof(int8), 1, file);
+            cluster = (currentIndex + 4);
+            fseek(file, -1, SEEK_CUR);
+            fwrite(&full, sizeof(int8), 1, file);
             fseek(file, cluster, SEEK_SET);
             while (currentIndex != 255)
             {
                 fread(&currentIndex, sizeof(int8), 1, file);
                 cluster = (currentIndex + 4);
                 fseek(file, -1, SEEK_CUR);
-                if (currentIndex != 255)
-                {
-                    fwrite(&empty, sizeof(int8), 1, file);
-                    fseek(file, cluster, SEEK_SET);
-                }
+                fwrite(&empty, sizeof(int8), 1, file);
+                fseek(file, cluster, SEEK_SET);
             }
+            //checa se o ha clusters para escrever
+            if((int)(sizeof(content) + 1) > availableClusters(file,fs.indexSize)+clusterInFile(file,entry.startCluster)){
+                cout<<"Aviso: Nao ha espaco para editar este arquivo";
+                return false;
+            }
+
+
             //vai para cluster do arquivo
             int bytesWritten=0;
             gotoCluster(file,entry.startCluster,fs);
@@ -499,7 +510,7 @@ bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterInd
                     fwrite(&content[i],1,1,file);
                     bytesWritten++;
                     if(bytesWritten==pow(2,fs.clusterSize)){
-                        currentIndex=findNewCluster(file,fs.indexSize,fs.clusterSize,currentIndex);
+                        currentIndex=(int8)findNewCluster(file,fs.indexSize,currentIndex);
                         if(currentIndex == -1){
                             return false;
                         }
