@@ -10,17 +10,17 @@ void createFile(FileSystem fs, char *filename)
     if ((file = fopen(filename, "wb")))
     {
         fwrite(&fs, sizeof(FileSystem), 1, file);
-        for (int i = 0; i < pow(2, fs.indexSize); i++)
+        for (int i = 0; i < pow(2, fs.indexSize)-1; i++)
         {
             fwrite(&empty, sizeof(int8), 1, file);
         }
-        for (int i = 0; i < pow(2, (fs.indexSize + fs.clusterSize)); i++)
+        for (int i = 0; i < pow(2, (fs.indexSize + fs.clusterSize))-pow(2,fs.clusterSize); i++)
         {
             fwrite(&empty, sizeof(int8), 1, file);
         }
         fseek(file, fs.indexStart, SEEK_SET);
         fwrite(&full, sizeof(int8), 1, file);
-        fseek(file, fs.indexStart + pow(2, fs.indexSize), SEEK_SET);
+        fseek(file, fs.indexStart + pow(2, fs.indexSize)-1, SEEK_SET);
         fwrite(&eof, sizeof(int8), 1, file);
         fclose(file);
     }
