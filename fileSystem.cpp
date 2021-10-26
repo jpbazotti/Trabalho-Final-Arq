@@ -12,7 +12,9 @@ char *getFileName(dirEntry *Entry)
     }
     else
     {
-        return strcat(strcat(Entry->name, "."), Entry->extension);
+        char* aux = new char;
+        strcpy(aux, Entry->name);
+        return strcat(strcat(aux, "."), Entry->extension);
     }
 }
 
