@@ -107,7 +107,7 @@ int main()
                 if (validPath(convertedPath))
                 {
                     if(RM(convertedPath, file, fs, &curDir)){
-                        if(Path.find(convertedPath) != std::string::npos){
+                        if(Path.find(inputPath) != std::string::npos){
                             Path = "/root";
                             curDir = fs.rootStart;
                             cout << "Aviso: enviado para o root\n";
