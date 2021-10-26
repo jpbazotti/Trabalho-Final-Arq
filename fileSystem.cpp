@@ -463,7 +463,6 @@ bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterInd
         } while (current.name[0] != 28);
         if (entry.startCluster == 0)
         {   
-            
             //nao achou arquivo na pasta
             return false;
         }
@@ -500,10 +499,10 @@ bool edit(char *path, FILE *file, char *content, FileSystem fs, int8 *clusterInd
             gotoCluster(file,entry.startCluster,fs);
             currentIndex=entry.startCluster;
             //checa se string comeca e termina com parenteses
-            if (content[0]=='"' && content[strlen(content)-1]=='"')
+            if (content[1]=='"' && content[strlen(content)-1]=='"')
             {
                 int8 eof = 28;
-                int i=1;
+                int i=2;
                 while (content[i]!='"')
                 {
                     

@@ -204,7 +204,7 @@ int main()
             else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
             {
                 cin >> inputPath;
-                cin >> inputPath2;
+                getline(cin,inputPath2);
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
@@ -225,6 +225,7 @@ int main()
                 if(convertedCurrentPath[Path.size()-1] == '/'){
                     convertedCurrentPath[Path.size()-1] = '\0';
                 }
+                cout << convertedPath2;
                 if (validPath(convertedPath))
                 {
                     if (!edit(convertedPath,file ,convertedPath2, fs, &curDir))
