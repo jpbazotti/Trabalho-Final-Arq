@@ -9,12 +9,34 @@ int main()
     cout << "start \n";
     FileSystem fs;
     FILE *file;
-    fs.indexSize = 8;
-    fs.clusterSize = 15;
-    fs.indexStart = 4;
-    fs.rootStart = 0;
     char fileName[] = "file.bin";
-    createFile(fs, fileName);
+    char c;
+    do
+    {
+        cout << "Criar novo file.bin(n) ou abrir file.bin existente(o)?\n";
+        cin >> c;
+    } while (c != 'n' && c != 'o');
+    switch (c)
+    {
+    case 'n':
+        fs.indexSize = 8;
+        fs.clusterSize = 15;
+        fs.indexStart = 4;
+        fs.rootStart = 0;
+        createFile(fs, fileName);
+        break;
+    case 'o':
+        if((file = fopen(fileName, "r+"))){
+            fread(&fs,sizeof(FileSystem),1,file);
+            cout<< (int)fs.indexSize << "\n";
+            cout<< (int)fs.clusterSize << "\n";
+            cout<< (int)fs.indexStart << "\n";
+            cout<< (int)fs.rootStart << "\n";
+            fclose(file);
+        }
+        break;
+    }
+
     int8 curDir = fs.rootStart;
     int startOffset = offSetCalc(fs.indexSize, fs.clusterSize, fs.rootStart);
     string Path = "/root";
@@ -38,8 +60,9 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(convertedPath[inputPath.size()-1] == '/'){
-                    convertedPath[inputPath.size()-1] = '\0';
+                if (convertedPath[inputPath.size() - 1] == '/')
+                {
+                    convertedPath[inputPath.size() - 1] = '\0';
                 }
                 if (CD(convertedPath, file, fs, &curDir))
                 {
@@ -65,7 +88,8 @@ int main()
                 }
                 else
                 {
-                    if(!createDir(file, curDir, inputPath.c_str(), fs)){
+                    if (!createDir(file, curDir, inputPath.c_str(), fs))
+                    {
                         cout << "Erro: sem espaco\n";
                     }
                     gotoCluster(file, curDir, fs);
@@ -89,7 +113,8 @@ int main()
                 }
                 else
                 {
-                    if(!createFile(file, curDir, name.c_str(), fs)){
+                    if (!createFile(file, curDir, name.c_str(), fs))
+                    {
                         cout << "Erro: sem espaco\n";
                     }
                     gotoCluster(file, curDir, fs);
@@ -101,13 +126,16 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(convertedPath[inputPath.size()-1] == '/'){
-                    convertedPath[inputPath.size()-1] = '\0';
+                if (convertedPath[inputPath.size() - 1] == '/')
+                {
+                    convertedPath[inputPath.size() - 1] = '\0';
                 }
                 if (validPath(convertedPath))
                 {
-                    if(RM(convertedPath, file, fs, &curDir)){
-                        if(Path.find(inputPath) != std::string::npos){
+                    if (RM(convertedPath, file, fs, &curDir))
+                    {
+                        if (Path.find(inputPath) != std::string::npos)
+                        {
                             Path = "/root";
                             curDir = fs.rootStart;
                             cout << "Aviso: enviado para o root\n";
@@ -123,7 +151,6 @@ int main()
                     cout << "Erro: caminho mal formatado\n";
                 }
                 gotoCluster(file, curDir, fs);
-
             }
             else if (command.compare("RENAME") == 0 || command.compare("rename") == 0)
             {
@@ -132,22 +159,25 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(convertedPath[inputPath.size()-1] == '/'){
-                    convertedPath[inputPath.size()-1] = '\0';
+                if (convertedPath[inputPath.size() - 1] == '/')
+                {
+                    convertedPath[inputPath.size() - 1] = '\0';
                 }
 
                 convertedPath2 = new char[inputPath2.size() + 1];
                 copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
                 convertedPath2[inputPath2.size()] = '\0';
-                if(convertedPath2[inputPath2.size()-1] == '/'){
-                    convertedPath2[inputPath2.size()-1] = '\0';
+                if (convertedPath2[inputPath2.size() - 1] == '/')
+                {
+                    convertedPath2[inputPath2.size() - 1] = '\0';
                 }
 
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
-                if(convertedCurrentPath[Path.size()-1] == '/'){
-                    convertedCurrentPath[Path.size()-1] = '\0';
+                if (convertedCurrentPath[Path.size() - 1] == '/')
+                {
+                    convertedCurrentPath[Path.size() - 1] = '\0';
                 }
                 if (validPath(convertedPath))
                 {
@@ -170,26 +200,29 @@ int main()
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(convertedPath[inputPath.size()-1] == '/'){
-                    convertedPath[inputPath.size()-1] = '\0';
+                if (convertedPath[inputPath.size() - 1] == '/')
+                {
+                    convertedPath[inputPath.size() - 1] = '\0';
                 }
 
                 convertedPath2 = new char[inputPath2.size() + 1];
                 copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
                 convertedPath2[inputPath2.size()] = '\0';
-                if(convertedPath2[inputPath2.size()-1] == '/'){
-                    convertedPath2[inputPath2.size()-1] = '\0';
+                if (convertedPath2[inputPath2.size() - 1] == '/')
+                {
+                    convertedPath2[inputPath2.size() - 1] = '\0';
                 }
 
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
-                if(convertedCurrentPath[Path.size()-1] == '/'){
-                    convertedCurrentPath[Path.size()-1] = '\0';
+                if (convertedCurrentPath[Path.size() - 1] == '/')
+                {
+                    convertedCurrentPath[Path.size() - 1] = '\0';
                 }
                 if (validPath(convertedPath) && validPath(convertedPath2))
                 {
-                    if (!MOVE(convertedPath,convertedPath2,file , fs, &curDir))
+                    if (!MOVE(convertedPath, convertedPath2, file, fs, &curDir))
                     {
                         cout << "Erro: erro nos argumentos / arquivo nao encontrado\n";
                     }
@@ -204,31 +237,34 @@ int main()
             else if (command.compare("EDIT") == 0 || command.compare("edit") == 0)
             {
                 cin >> inputPath;
-                getline(cin,inputPath2);
+                getline(cin, inputPath2);
                 convertedPath = new char[inputPath.size() + 1];
                 copy(inputPath.begin(), inputPath.end(), convertedPath);
                 convertedPath[inputPath.size()] = '\0';
-                if(convertedPath[inputPath.size()-1] == '/'){
-                    convertedPath[inputPath.size()-1] = '\0';
+                if (convertedPath[inputPath.size() - 1] == '/')
+                {
+                    convertedPath[inputPath.size() - 1] = '\0';
                 }
 
                 convertedPath2 = new char[inputPath2.size() + 1];
                 copy(inputPath2.begin(), inputPath2.end(), convertedPath2);
                 convertedPath2[inputPath2.size()] = '\0';
-                if(convertedPath2[inputPath2.size()-1] == '/'){
-                    convertedPath2[inputPath2.size()-1] = '\0';
+                if (convertedPath2[inputPath2.size() - 1] == '/')
+                {
+                    convertedPath2[inputPath2.size() - 1] = '\0';
                 }
 
                 convertedCurrentPath = new char[Path.size() + 1];
                 copy(Path.begin(), Path.end(), convertedCurrentPath);
                 convertedCurrentPath[Path.size()] = '\0';
-                if(convertedCurrentPath[Path.size()-1] == '/'){
-                    convertedCurrentPath[Path.size()-1] = '\0';
+                if (convertedCurrentPath[Path.size() - 1] == '/')
+                {
+                    convertedCurrentPath[Path.size() - 1] = '\0';
                 }
                 cout << convertedPath2;
                 if (validPath(convertedPath))
                 {
-                    if (!edit(convertedPath,file ,convertedPath2, fs, &curDir))
+                    if (!edit(convertedPath, file, convertedPath2, fs, &curDir))
                     {
                         cout << "Erro: erro nos argumentos / arquivo nao encontrado\n";
                     }
@@ -240,7 +276,8 @@ int main()
                     cout << "Erro: caminho mal formatado\n";
                 }
             }
-            else{
+            else
+            {
                 cout << "Erro: comando nao existente\n";
             }
             cin.clear();
